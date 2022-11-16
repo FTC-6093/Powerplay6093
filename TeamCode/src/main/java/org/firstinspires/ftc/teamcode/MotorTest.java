@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,6 +21,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.Arrays;
 
 @TeleOp (name = "Motor Test", group = "Iterative Opmode")
 public class MotorTest extends OpMode {
@@ -38,7 +41,7 @@ public class MotorTest extends OpMode {
     private DcMotor VertLift = null;
 
     private static char checkForColor(double r, double g, double b, double error) {
-        if (1-error < r+g+b || r+g+b < 1+error) {
+        if (255-error < r+g+b || r+g+b < 255+error) {
             char[] rgb = {'r', 'g', 'b'};
             double[] findMax = {r, g, b};
 
@@ -51,7 +54,7 @@ public class MotorTest extends OpMode {
 
             return rgb[currentMaxIndex];
         }
-        return ' ';
+        return 'e';
     }
 
     @Override
@@ -100,40 +103,54 @@ public class MotorTest extends OpMode {
     }
 
     public class ColorPipeline extends OpenCvPipeline implements org.firstinspires.ftc.teamcode.ColorPipeline {
+        Mat inputMask = new Mat();
+        Size boxSize = new Size(5, 5);
+        Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
+        org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
+        Scalar one = new Scalar(1);
+
+
+
         @Override
         public Mat processFrame(@NonNull Mat input) {
-//            Mat inputMask = new Mat();
-//            input.copyTo(inputMask);
+            //screen is 720 by 1280
+            input.copyTo(inputMask);
 //            Imgproc.Canny(input, inputMask, 250, 800);
-//            Imgproc.blur(inputMask, inputMask, new Size(5, 5));
+//            Imgproc.blur(inputMask, inputMask, boxSize);
 //            //assuming Mat.size() gets mat size
-//            Size imgDims = input.size();
-//            Mat mask = new Mat(new Size(imgDims.width+2,imgDims.height+2), org.opencv.core.CvType.CV_8U);
-//            org.opencv.core.Point seed = new org.opencv.core.Point(imgDims.width/2, imgDims.height/2);
-//            Imgproc.floodFill(inputMask, mask, seed, new Scalar(1));
+//            Imgproc.floodFill(inputMask, mask, seed, one);
 //            Imgproc.threshold(inputMask,inputMask,254,255,Imgproc.THRESH_BINARY);
 //
 //            telemetry.addData("Image size: ", ""+input.size().toString());
 //            telemetry.addData("Mask size: ", ""+inputMask.size().toString());
 //            telemetry.update();
-//
-//            //try to fix memory leak, delete this later
-//            inputMask = null;
-//            mask = null;
-//            imgDims = null;
+
+//            input.mul(inputMask);
 
             return input;
+        }
+
+        public char getColor() {
+            double[] rgb = inputMask.get(360, 640);
+            if (rgb != null) {
+                if (rgb.length == 4) {
+                    double r = rgb[0];
+                    double g = rgb[1];
+                    double b = rgb[2];
+                    return checkForColor(r, g, b, 70);
+                }
+            }
+            return 'a';
+        }
+
+        public double[] getMiddlePixel() {
+            return inputMask.get(640, 360);
         }
     }
 
         @Override
     public void start() { //Code to run ONCE when the driver hits PLAY
         runtime.reset();
-    }
-
-    private int[] getMiddlePixel(Bitmap image) {
-        int val = image.getPixel(640,360);
-        return new int[]{Color.red(val),Color.green(val),Color.blue(val)};
     }
 
     @Override
@@ -166,15 +183,30 @@ public class MotorTest extends OpMode {
         BRDrive.setPower(backRightPower);
 
         if (down && !up) {
-            VertLift.setPower(0.65);
+            VertLift.setPower(1.0);
         } else if (!down && up){
-            VertLift.setPower(-0.65);
+            VertLift.setPower(-1.0);
         }else{
             VertLift.setPower(0);
         }
 
+        telemetry.addData("Pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
+        telemetry.addData("Color: ", ""+pipeline.getColor());
 
-
+        switch (pipeline.getColor()) {
+            case 'r':
+                //red
+            case 'g':
+                //green
+            case 'b':
+                //blue
+            case 'e':
+                //not looking at cone
+            case 'a':
+                //something with config seriously messed up
+            default:
+                //how tf did you get here
+        }
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
