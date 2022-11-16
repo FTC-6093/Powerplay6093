@@ -7,6 +7,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Mat;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
+import androidx.annotation.NonNull;
+
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -29,9 +41,74 @@ public class Auto1 extends LinearOpMode {
     private DcMotor BRDrive = null;
     OpenCvWebcam webcam = null;
     private  BNO055IMU imu;
+    private DcMotor VertLift = null;
+    ColorPipeline pipeline = new ColorPipeline();
+    private static char checkForColor(double r, double g, double b, double error) {
+        if (255-error < r+g+b || r+g+b < 255+error) {
+            char[] rgb = {'r', 'g', 'b'};
+            double[] findMax = {r, g, b};
+
+            int currentMaxIndex = 0;
+            for (int i=0; i < 3; i++) {
+                if (findMax[i] > findMax[currentMaxIndex]) {
+                    currentMaxIndex = i;
+                }
+            }
+
+            return rgb[currentMaxIndex];
+        }
+        return 'e';
+    }
+
+    public class ColorPipeline extends OpenCvPipeline implements org.firstinspires.ftc.teamcode.ColorPipeline {
+        Mat inputMask = new Mat();
+        Size boxSize = new Size(5, 5);
+        Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
+        org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
+        Scalar one = new Scalar(1);
+
+
+
+        @Override
+        public Mat processFrame(@NonNull Mat input) {
+            //screen is 720 by 1280
+            input.copyTo(inputMask);
+//            Imgproc.Canny(input, inputMask, 250, 800);
+//            Imgproc.blur(inputMask, inputMask, boxSize);
+//            //assuming Mat.size() gets mat size
+//            Imgproc.floodFill(inputMask, mask, seed, one);
+//            Imgproc.threshold(inputMask,inputMask,254,255,Imgproc.THRESH_BINARY);
+//
+//            telemetry.addData("Image size: ", ""+input.size().toString());
+//            telemetry.addData("Mask size: ", ""+inputMask.size().toString());
+//            telemetry.update();
+
+//            input.mul(inputMask);
+
+            return input;
+        }
+
+        public char getColor() {
+            double[] rgb = inputMask.get(360, 640);
+            if (rgb != null) {
+                if (rgb.length == 4) {
+                    double r = rgb[0];
+                    double g = rgb[1];
+                    double b = rgb[2];
+                    return checkForColor(r, g, b, 70);
+                }
+            }
+            return 'a';
+        }
+
+        public double[] getMiddlePixel() {
+            return inputMask.get(640, 360);
+        }
+    }
 
     @Override
     public void runOpMode() {
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -46,6 +123,19 @@ public class Auto1 extends LinearOpMode {
         FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
         BLDrive = hardwareMap.get(DcMotor.class, "BLDrive");
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+            }
+            @Override
+            public void onError(int errorCode) {
+            }
+        });
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -63,6 +153,15 @@ public class Auto1 extends LinearOpMode {
 
         runtime.reset();
 
+//==================================================================================================
+        //Jaren, run code here
+        //pipeline.getColor() will return
+        //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config.
+
+
+
+
+
         //This is were we put the code we want
 
         //IMUTurn(360, .5, FLDrive, FRDrive, BLDrive, BRDrive);
@@ -72,9 +171,14 @@ public class Auto1 extends LinearOpMode {
         //IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
         //sleep(1000);
 
+
+
+
+
         //This section is if we are the robot closer to the storage unit
 
-        driveStraight(47, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+        driveStraight(43, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+
         /*IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
         driveStraight(25, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
         //Use a motor to return duck from carousel here
@@ -103,6 +207,9 @@ public class Auto1 extends LinearOpMode {
         telemetry.update();
         //sleep(5000);
     }
+
+
+
 
     public void initializeIMU() {
         this.imu = this.hardwareMap.get(BNO055IMU.class, "imu");
@@ -194,6 +301,14 @@ public class Auto1 extends LinearOpMode {
                 Math.abs(robotTurnedAngle) < Math.abs(angle)) {
             robotTurnedAngle = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle-startAngle;
 
+
+
+
+
+
+
+
+
             if((Math.abs(robotTurnedAngle)) >= (Math.abs(angle)))
             {
                 frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -277,11 +392,11 @@ public class Auto1 extends LinearOpMode {
 
         while (this.opModeIsActive() && (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy())) {
             //We are just waiting until the motors reach the position (based on the ticks passed)
-            // telemetry.addData("FL Position", FlPosition);
-            //telemetry.addData("Fr Position", FrPosition);
-            //telemetry.addData("Bl Position", BLpositiom);
-            //telemetry.addData("Br Position", Brposition);
-            // telemetry.addData("Ticks Needed", tickNeeded);
+//             telemetry.addData("FL Position", FlPosition);
+//            telemetry.addData("Fr Position", FrPosition);
+//            telemetry.addData("Bl Position", BLpositiom);
+//            telemetry.addData("Br Position", Brposition);
+//             telemetry.addData("Ticks Needed", tickNeeded);
             telemetry.addData("Success!", null);
 
             telemetry.update();
