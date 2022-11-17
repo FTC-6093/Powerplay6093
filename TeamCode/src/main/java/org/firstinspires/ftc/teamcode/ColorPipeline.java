@@ -16,7 +16,7 @@ public class ColorPipeline extends OpenCvPipeline {
     org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
     Scalar one = new Scalar(1);
 
-    private static char checkForColor(double r, double g, double b, double error) {
+    private static char checkForRGB(double r, double g, double b, double error) {
         if (255-error < r+g+b || r+g+b < 255+error) {
             char[] rgb = {'r', 'g', 'b'};
             double[] findMax = {r, g, b};
@@ -33,11 +33,36 @@ public class ColorPipeline extends OpenCvPipeline {
         return 'e';
     }
 
+    private static char checkForHSV(double h, double error) {
+        assert h <= 60;
+        double horiz_rot = (h-60) % 360;
+
+        //red = 300
+        if (error-300 < horiz_rot && horiz_rot < error+300) {
+            return 'r';
+        }
+        //green = 60
+        if (error-60 < horiz_rot && horiz_rot < error+60) {
+            return 'g';
+        }
+        //blue = 180
+        if (error-180 < horiz_rot && horiz_rot < error+180) {
+            return 'b';
+        }
+
+        return 'e';
+    }
+
+
+    @Override
+    public void init(Mat input) {
+    }
 
     @Override
     public Mat processFrame(@NonNull Mat input) {
         //screen is 720 by 1280
         input.copyTo(inputMask);
+        Imgproc.cvtColor(inputMask,inputMask,Imgproc.COLOR_RGB2HSV);
 //            Imgproc.Canny(input, inputMask, 250, 800);
 //            Imgproc.blur(inputMask, inputMask, boxSize);
 //            //assuming Mat.size() gets mat size
@@ -54,13 +79,11 @@ public class ColorPipeline extends OpenCvPipeline {
     }
 
     public char getColor() {
-        double[] rgb = inputMask.get(360, 640);
-        if (rgb != null) {
-            if (rgb.length == 4) {
-                double r = rgb[0];
-                double g = rgb[1];
-                double b = rgb[2];
-                return checkForColor(r, g, b, 70);
+        double[] hsv = inputMask.get(360, 640);
+        if (hsv != null) {
+            if (hsv.length == 4) {
+                double h = hsv[0];
+                return checkForHSV(h, 60);
             }
         }
         return 'a';
