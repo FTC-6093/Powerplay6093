@@ -22,6 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
+import java.util.Arrays;
+
 @Autonomous(name = "Auto 1")
 //@Disabled
 public class Auto1 extends LinearOpMode {
@@ -152,40 +154,51 @@ public class Auto1 extends LinearOpMode {
 //==================================================================================================
         //Jaren, run code here
         //pipeline.getColor() will return
-        //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config.
-        driveStraight(1, 0.5, FRDrive, FLDrive, BLDrive, BRDrive);
-        sleep(1000);
-        driveStraight(1, -0.5, FRDrive, FLDrive, BLDrive, BRDrive);
+        //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
+        driveStraight(45, 0.5, FRDrive, FLDrive, BLDrive, BRDrive);
+        int i = 0;
+        boolean doBreak = false;
+        while (i < 100000 || doBreak) {
+            i++;
+            char c = pipeline.getColor();
+            switch (c) {
+                case 'r':
+                    IMUTurn(-90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+                    driveStraight(36, 0.5, FLDrive, FRDrive, BRDrive, BLDrive);
+                    telemetry.addData("Camera Status: ", "Red Detected");
+                    doBreak = true;
+                    break;
+                case 'g':
+                    driveStraight(43, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+                    telemetry.addData("Camera Status: ", "Green Detected");
+                    doBreak = true;
+                    break;
+                case 'b':
+                    IMUTurn(90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+                    driveStraight(36, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+                    telemetry.addData("Camera Status: ", "Blue Detected");
+                    doBreak = true;
+                    break;
+                case 'e':
+                    IMUTurn(10, 0.2, FRDrive, FLDrive, BRDrive, BLDrive);
+                    IMUTurn(-10, 0.2, FRDrive, FLDrive, BLDrive, BRDrive);
+                    telemetry.addData("Camera Status: ", "Camera Searching");
+                    break;
+                case 'a':
+                    //trigger plan c
+                    //panic_and_catch_fire("gun");
+                    telemetry.addData("Camera Status: ", "Camera malfunction");
+                    break;
+                default:
+                    //logically, this case is impossible
+                    //trigger plan d
+                    //panic_and_catch_fire("nuke");
+                    telemetry.addData("Camera Status: ", "??????"+pipeline.getColor());
+            }
+            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
+            telemetry.update();
+        }
 
-
-//        switch (pipeline.getColor()) {
-//            case 'r':
-//                IMUTurn(-90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-//                driveStraight(36, 0.5, FLDrive, FRDrive, BRDrive, BLDrive);
-//                telemetry.addData("Camera Status: ", "Red Detected");
-//            case 'g':
-//                driveStraight(43, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-//                telemetry.addData("Camera Status: ", "Green Detected");
-//            case 'b':
-//                IMUTurn(90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-//                driveStraight(36, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-//                telemetry.addData("Camera Status: ", "Blue Detected");
-//            case 'e':
-//                IMUTurn(10, 0.2, FRDrive, FLDrive, BRDrive, BLDrive);
-//                IMUTurn(-10,0.2, FRDrive, FLDrive, BLDrive, BRDrive);
-//                telemetry.addData("Camera Status: ", "Camera Searching");
-//            case 'a':
-//                //trigger plan c
-//                //panic_and_catch_fire("gun");
-//                telemetry.addData("Camera Status: ", "Camera malfunction");
-//                break;
-//            default:
-//                //logically, this case is impossible
-//                //trigger plan d
-//                //panic_and_catch_fire("nuke");
-//                telemetry.addData("Camera Status: ", "??????????????????");
-//        }
-//
 //        sleep(2000);
 
         //This is were we put the code we want
