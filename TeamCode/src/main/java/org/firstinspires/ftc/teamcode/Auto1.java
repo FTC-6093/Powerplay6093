@@ -95,7 +95,8 @@ public class Auto1 extends LinearOpMode {
         //Jaren, run code here
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
-        driveStraight(45, 0.5, FRDrive, FLDrive, BLDrive, BRDrive);
+        driveStraight(12, 0.5);
+        sleep(2000);
 
         //snip color cases
 /*
@@ -143,7 +144,6 @@ public class Auto1 extends LinearOpMode {
         }
 */
 
-        sleep(2000);
 
         //snip ftc code
         /*
@@ -312,7 +312,7 @@ public class Auto1 extends LinearOpMode {
         }
     }
 
-    public void driveStraight(double inch, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+    public void driveStraight(double inch, double power) {
         //encoder's resolution: 537.6 in
         //Going straight constant: 42.78
         // final double ticksPerInch = 95.94  ;
@@ -323,10 +323,10 @@ public class Auto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH * 2;
 
         //Reset encoder positions
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         int tickNeeded = (int) (ticksPerInch * inch);
 
@@ -336,29 +336,29 @@ public class Auto1 extends LinearOpMode {
         int BrPosition;
 
         //How many ticks the motor needs to move
-        frontLeft.setTargetPosition(tickNeeded);
-        frontRight.setTargetPosition(tickNeeded);
-        backLeft.setTargetPosition(tickNeeded);
-        backRight.setTargetPosition(tickNeeded);
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
 
         //Changes what information we send to the motors.
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Set the power value for each motor
-        frontLeft.setPower(power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(power);
+        FLDrive.setPower(power);
+        FRDrive.setPower(power);
+        BLDrive.setPower(power);
+        BRDrive.setPower(power);
 
-        FlPosition = frontLeft.getCurrentPosition();
-        FrPosition = frontRight.getCurrentPosition();
-        BlPosition = backLeft.getCurrentPosition();
-        BrPosition = backRight.getCurrentPosition();
+        FlPosition = FLDrive.getCurrentPosition();
+        FrPosition = FRDrive.getCurrentPosition();
+        BlPosition = BLDrive.getCurrentPosition();
+        BrPosition = BRDrive.getCurrentPosition();
 
-        while (this.opModeIsActive() && (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy())) {
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
 //            We are just waiting until the motors reach the position (based on the ticks passed)
              telemetry.addData("Fl Position", ""+FlPosition);
             telemetry.addData("Fr Position", ""+FrPosition);
@@ -370,9 +370,9 @@ public class Auto1 extends LinearOpMode {
             telemetry.update();
         }
         //When the motors have passed the required ticks, stop each motor
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
     }
 }

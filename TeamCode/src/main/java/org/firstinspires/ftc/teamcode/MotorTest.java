@@ -139,21 +139,6 @@ public class MotorTest extends OpMode {
         telemetry.addData("Pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
         telemetry.addData("Color: ", ""+pipeline.getColor());
 
-        switch (pipeline.getColor()) {
-            case 'r':
-                //red
-            case 'g':
-                //green
-            case 'b':
-                //blue
-            case 'e':
-                //not looking at cone
-            case 'a':
-                //camera config error
-            default:
-                //how tf did you get here
-        }
-
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("HOW_LONG_MAX", FRDrive.getCurrentPosition());
