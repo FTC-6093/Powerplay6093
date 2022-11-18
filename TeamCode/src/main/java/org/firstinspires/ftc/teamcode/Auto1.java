@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode;
+import androidx.annotation.NonNull;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,7 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Mat;
 
-import androidx.annotation.NonNull;
 
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -33,10 +33,10 @@ public class Auto1 extends LinearOpMode {
     private DcMotor FRDrive = null;
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
-    OpenCvWebcam webcam = null;
-    private  BNO055IMU imu;
     private DcMotor VertLift = null;
+    OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
+    private  BNO055IMU imu;
     final double WHEEL_DIAMETER = 3.875;
     final double TICKS_PER_ROTATION = 1120;
     final double PIE = 3.14159;
@@ -44,7 +44,6 @@ public class Auto1 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -79,6 +78,10 @@ public class Auto1 extends LinearOpMode {
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        VertLift.setDirection(DcMotor.Direction.FORWARD);
+
+        webcam.setPipeline(pipeline);
 
         FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -137,7 +140,7 @@ public class Auto1 extends LinearOpMode {
             telemetry.update();
         }
 
-//        sleep(2000);
+        sleep(2000);
 
         //This is were we put the code we want
 

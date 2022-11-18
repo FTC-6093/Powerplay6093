@@ -29,27 +29,28 @@ public class MotorTest extends OpMode {
 
     //Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor BLDrive = null;
-    private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
+    private DcMotor FRDrive = null;
+    private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
-    int HOW_LONG_MAX = 0;
-    final double powerMultiplier = 0.5;
-    final double WHEELDIAMETER = 3.875;
-    final double TICKSPERROTATION = 1120;
-    final double PIE = 3.14159;
+    private DcMotor VertLift = null;
     OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
-    private DcMotor VertLift = null;
-
+    
+    int HOW_LONG_MAX = 0;
+    final double powerMultiplier = 0.5;
+    final double WHEEL_DIAMETER = 3.875;
+    final double TICKS_PER_ROTATION = 1120;
+    final double PIE = 3.14159;
+    final double TICKS_PER_INCH = TICKS_PER_ROTATION/(WHEEL_DIAMETER * PIE);
     @Override
     public void init() { //Code to run ONCE when the driver hits INIT
         telemetry.addData("Status", "Initializing");
         telemetry.update();
         //Configure OpMode members to Driver Hub Device Names
-        BLDrive = hardwareMap.get(DcMotor.class, "BLDrive");
-        FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
         FLDrive = hardwareMap.get(DcMotor.class, "FLDrive");
+        FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
+        BLDrive = hardwareMap.get(DcMotor.class, "BLDrive");
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -67,14 +68,20 @@ public class MotorTest extends OpMode {
 
 
 
+        FLDrive.setDirection(DcMotor.Direction.FORWARD);
+        BLDrive.setDirection(DcMotor.Direction.FORWARD);
+        FRDrive.setDirection(DcMotor.Direction.REVERSE);
+        BRDrive.setDirection(DcMotor.Direction.REVERSE);
+
+        VertLift.setDirection(DcMotor.Direction.FORWARD);
+
         webcam.setPipeline(pipeline);
 
         //Set OpMode Member's directions
-        BLDrive.setDirection(DcMotor.Direction.FORWARD);
-        BRDrive.setDirection(DcMotor.Direction.REVERSE);
-        FRDrive.setDirection(DcMotor.Direction.REVERSE);
-        FLDrive.setDirection(DcMotor.Direction.FORWARD);
-        VertLift.setDirection(DcMotor.Direction.FORWARD);
+        FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //EmptyPipeline pLine = new EmptyPipeline();
         //pLine.processFrame(isMat);
