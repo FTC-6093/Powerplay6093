@@ -35,7 +35,9 @@ public class MotorTest extends OpMode {
     private DcMotor BRDrive = null;
     int HOW_LONG_MAX = 0;
     final double powerMultiplier = 0.5;
-
+    final double WHEELDIAMETER = 3.875;
+    final double TICKSPERROTATION = 1120;
+    final double PIE = 3.14159;
     OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
     private DcMotor VertLift = null;
