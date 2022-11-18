@@ -1,24 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Mat;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -30,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
-@Autonomous(name = "Auto 3.X")
+@Autonomous(name = "Auto 1")
 //@Disabled
 public class Auto1 extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
@@ -43,6 +35,10 @@ public class Auto1 extends LinearOpMode {
     private  BNO055IMU imu;
     private DcMotor VertLift = null;
     ColorPipeline pipeline = new ColorPipeline();
+    final double WHEEL_DIAMETER = 3.875;
+    final double TICKS_PER_ROTATION = 1120;
+    final double PIE = 3.14159;
+    final double TICKS_PER_INCH = TICKS_PER_ROTATION/(WHEEL_DIAMETER * PIE);
     private static char checkForColor(double r, double g, double b, double error) {
         if (255-error < r+g+b || r+g+b < 255+error) {
             char[] rgb = {'r', 'g', 'b'};
@@ -157,10 +153,40 @@ public class Auto1 extends LinearOpMode {
         //Jaren, run code here
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config.
+        driveStraight(1, 0.5, FRDrive, FLDrive, BLDrive, BRDrive);
+        sleep(1000);
+        driveStraight(1, -0.5, FRDrive, FLDrive, BLDrive, BRDrive);
 
 
-
-
+//        switch (pipeline.getColor()) {
+//            case 'r':
+//                IMUTurn(-90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+//                driveStraight(36, 0.5, FLDrive, FRDrive, BRDrive, BLDrive);
+//                telemetry.addData("Camera Status: ", "Red Detected");
+//            case 'g':
+//                driveStraight(43, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+//                telemetry.addData("Camera Status: ", "Green Detected");
+//            case 'b':
+//                IMUTurn(90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+//                driveStraight(36, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
+//                telemetry.addData("Camera Status: ", "Blue Detected");
+//            case 'e':
+//                IMUTurn(10, 0.2, FRDrive, FLDrive, BRDrive, BLDrive);
+//                IMUTurn(-10,0.2, FRDrive, FLDrive, BLDrive, BRDrive);
+//                telemetry.addData("Camera Status: ", "Camera Searching");
+//            case 'a':
+//                //trigger plan c
+//                //panic_and_catch_fire("gun");
+//                telemetry.addData("Camera Status: ", "Camera malfunction");
+//                break;
+//            default:
+//                //logically, this case is impossible
+//                //trigger plan d
+//                //panic_and_catch_fire("nuke");
+//                telemetry.addData("Camera Status: ", "??????????????????");
+//        }
+//
+//        sleep(2000);
 
         //This is were we put the code we want
 
@@ -177,7 +203,6 @@ public class Auto1 extends LinearOpMode {
 
         //This section is if we are the robot closer to the storage unit
 
-        driveStraight(43, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
 
         /*IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
         driveStraight(25, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
@@ -351,7 +376,7 @@ public class Auto1 extends LinearOpMode {
     public void driveStraight(double inch, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
         //encoder's resolution: 537.6 in
         //Going straight constant: 42.78
-        final double ticksPerInch = 42.78;
+        final double ticksPerInch = TICKS_PER_INCH;
         // final double ticksPerInch = 95.94  ; //ticks doubled because the rollers on the mechanam wheels apply some force sideways
 
         //Reset encoder positions
