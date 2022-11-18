@@ -41,22 +41,6 @@ public class Auto1 extends LinearOpMode {
     final double TICKS_PER_ROTATION = 1120;
     final double PIE = 3.14159;
     final double TICKS_PER_INCH = TICKS_PER_ROTATION/(WHEEL_DIAMETER * PIE);
-    private static char checkForColor(double r, double g, double b, double error) {
-        if (255-error < r+g+b || r+g+b < 255+error) {
-            char[] rgb = {'r', 'g', 'b'};
-            double[] findMax = {r, g, b};
-
-            int currentMaxIndex = 0;
-            for (int i=0; i < 3; i++) {
-                if (findMax[i] > findMax[currentMaxIndex]) {
-                    currentMaxIndex = i;
-                }
-            }
-
-            return rgb[currentMaxIndex];
-        }
-        return 'e';
-    }
 
     @Override
     public void runOpMode() {
