@@ -322,6 +322,9 @@ public class Auto1 extends LinearOpMode {
         // idk if this will help, but hopefully it will
         final double ticksPerInch = TICKS_PER_INCH * 2;
 
+        // correct for weight imbalances
+        final double directionBias = 0;
+
         //Reset encoder positions
         FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -348,10 +351,10 @@ public class Auto1 extends LinearOpMode {
         BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Set the power value for each motor
-        FLDrive.setPower(power);
-        FRDrive.setPower(power);
-        BLDrive.setPower(power);
-        BRDrive.setPower(power);
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
 
         FlPosition = FLDrive.getCurrentPosition();
         FrPosition = FRDrive.getCurrentPosition();
