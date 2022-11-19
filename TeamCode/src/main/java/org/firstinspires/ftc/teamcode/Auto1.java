@@ -1,28 +1,21 @@
 package org.firstinspires.ftc.teamcode;
-import androidx.annotation.NonNull;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
 
 
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-
-import java.util.Arrays;
 
 @Autonomous(name = "Auto 1")
 //@Disabled
@@ -75,8 +68,8 @@ public class Auto1 extends LinearOpMode {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-        BLDrive.setDirection(DcMotor.Direction.FORWARD);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
+        BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
 
         VertLift.setDirection(DcMotor.Direction.FORWARD);
@@ -84,8 +77,8 @@ public class Auto1 extends LinearOpMode {
         webcam.setPipeline(pipeline);
 
         FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Wait for the game to start (driver presses PLAY)
@@ -95,8 +88,11 @@ public class Auto1 extends LinearOpMode {
         //Jaren, run code here
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
-        driveStraight(12, 0.5);
-        sleep(2000);
+        driveStraight(12, 0.75);
+        sleep(4000);
+        strafeRight(12, 0.75);
+        sleep(4000);
+        strafeLeft(12, 0.75);
 
         //snip color cases
 /*
@@ -318,9 +314,8 @@ public class Auto1 extends LinearOpMode {
         // final double ticksPerInch = 95.94  ;
 
 
-        // ticks doubled because the rollers on the mechanam wheels apply some force sideways
-        // idk if this will help, but hopefully it will
-        final double ticksPerInch = TICKS_PER_INCH * 2;
+        // only strafing needs doubling ticks per inch
+        final double ticksPerInch = TICKS_PER_INCH;
 
         // correct for weight imbalances
         final double directionBias = 0;
@@ -356,18 +351,150 @@ public class Auto1 extends LinearOpMode {
         BLDrive.setPower(power-directionBias);
         BRDrive.setPower(power+directionBias);
 
-        FlPosition = FLDrive.getCurrentPosition();
-        FrPosition = FRDrive.getCurrentPosition();
-        BlPosition = BLDrive.getCurrentPosition();
-        BrPosition = BRDrive.getCurrentPosition();
 
         while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
 //            We are just waiting until the motors reach the position (based on the ticks passed)
              telemetry.addData("Fl Position", ""+FlPosition);
             telemetry.addData("Fr Position", ""+FrPosition);
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
              telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Success!", null);
+
+            telemetry.update();
+        }
+        //When the motors have passed the required ticks, stop each motor
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
+    }
+
+    public void strafeRight(double inch, double power) {
+        //encoder's resolution: 537.6 in
+        //Going straight constant: 42.78
+        // final double ticksPerInch = 95.94  ;
+
+
+        // driving is fine, strafing needs double
+        final double ticksPerInch = TICKS_PER_INCH * 1.5;
+
+        // correct for weight imbalances
+        final double directionBias = 0;
+
+        //Reset encoder positions
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int tickNeeded = (int) (ticksPerInch * inch);
+
+        int FlPosition;
+        int FrPosition;
+        int BlPosition;
+        int BrPosition;
+
+        //How many ticks the motor needs to move
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(-tickNeeded);
+        BLDrive.setTargetPosition(-tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
+
+        //Changes what information we send to the motors.
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Set the power value for each motor
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
+
+
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
+//            We are just waiting until the motors reach the position (based on the ticks passed)
+            telemetry.addData("Fl Position", ""+FlPosition);
+            telemetry.addData("Fr Position", ""+FrPosition);
+            telemetry.addData("Bl Position", ""+BlPosition);
+            telemetry.addData("Br Position", ""+BrPosition);
+            telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Success!", null);
+
+            telemetry.update();
+        }
+        //When the motors have passed the required ticks, stop each motor
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
+    }
+
+    public void strafeLeft(double inch, double power) {
+        //encoder's resolution: 537.6 in
+        //Going straight constant: 42.78
+        // final double ticksPerInch = 95.94  ;
+
+
+        // driving is fine, strafing needs double
+        final double ticksPerInch = TICKS_PER_INCH * 1.5;
+
+        // correct for weight imbalances
+        final double directionBias = 0;
+
+        //Reset encoder positions
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int tickNeeded = (int) (ticksPerInch * inch);
+
+        int FlPosition;
+        int FrPosition;
+        int BlPosition;
+        int BrPosition;
+
+        //How many ticks the motor needs to move
+        FLDrive.setTargetPosition(-tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(-tickNeeded);
+
+        //Changes what information we send to the motors.
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Set the power value for each motor
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
+
+
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
+//            We are just waiting until the motors reach the position (based on the ticks passed)
+            telemetry.addData("Fl Position", ""+FlPosition);
+            telemetry.addData("Fr Position", ""+FrPosition);
+            telemetry.addData("Bl Position", ""+BlPosition);
+            telemetry.addData("Br Position", ""+BrPosition);
+            telemetry.addData("Ticks Needed", ""+tickNeeded);
             telemetry.addData("Success!", null);
 
             telemetry.update();
