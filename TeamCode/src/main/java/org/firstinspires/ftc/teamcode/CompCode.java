@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -18,6 +19,7 @@ public class CompCode extends OpMode {
     private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
     private DcMotor BRDrive = null;
+    private BNO055IMU imu = null;
 //    private DcMotor VertLift = null;
 //    private CRServo OpenClaw = null;
 //    private CRServo LiftUp = null;
@@ -46,6 +48,15 @@ public class CompCode extends OpMode {
 
 //        OpenClaw.setDirection(CRServo.Direction.FORWARD);
 //        LiftUp.setDirection(CRServo.Direction.FORWARD);
+
+
+        // Retrieve the IMU from the hardware map
+        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        // Technically this is the default, however specifying it is clearer
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        // Without this, data retrieving from the IMU throws an exception
+        imu.initialize(parameters);
 
 
         double pastMotorPower = 0;
@@ -92,10 +103,20 @@ public class CompCode extends OpMode {
 
         // Retrieve lift values from controller
 
+
+
+        double botHeading = -imu.getAngularOrientation().firstAngle;
+
+
+
+
         //Retrieve driving values from controller
         double y = gamepad1.left_stick_y * .8; // Is reversed
         double x = gamepad1.left_stick_x * .8;// Counteract imperfect strafing
         double rx = gamepad1.right_stick_x * .8;
+
+        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
 //        boolean up = (gamepad2.left_trigger > 0);
@@ -104,10 +125,10 @@ public class CompCode extends OpMode {
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x - rx) / denominator;
-        double backLeftPower = (y - x - rx) / denominator;
-        double frontRightPower = (y - x + rx) / denominator;
-        double backRightPower = (y + x + rx) / denominator;
+        double frontLeftPower = (rotY + rotX - rx) / denominator;
+        double backLeftPower = (rotY - rotX - rx) / denominator;
+        double frontRightPower = (rotY - rotX + rx) / denominator;
+        double backRightPower = (rotY + rotX + rx) / denominator;
 
         FLDrive.setPower(frontLeftPower*motorMultiplier);
         FRDrive.setPower(frontRightPower*motorMultiplier);
