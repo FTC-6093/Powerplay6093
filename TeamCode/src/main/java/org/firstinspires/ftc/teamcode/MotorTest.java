@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -34,6 +35,8 @@ public class MotorTest extends OpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     private DcMotor VertLift = null;
+    private CRServo OpenClaw = null;
+    private CRServo LiftUp = null;
     OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
     
@@ -52,6 +55,10 @@ public class MotorTest extends OpMode {
         FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
         BLDrive = hardwareMap.get(DcMotor.class, "BLDrive");
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
+
+        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
+        LiftUp = hardwareMap.get(CRServo.class, "LiftUp");
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
@@ -105,6 +112,26 @@ public class MotorTest extends OpMode {
         HOW_LONG_MAX = Math.max(FLDrive.getCurrentPosition(), HOW_LONG_MAX);
 //        webcam.getFrameBitmap(Bitmap.getPixel);
 
+        //get dpad values for lift
+
+        boolean dpad_up = gamepad1.dpad_up;
+        boolean dpad_down = gamepad1.dpad_down;
+        boolean dpad_left = gamepad1.dpad_left;
+        boolean dpad_right = gamepad1.dpad_right;
+
+//        if (dpad_up) {
+//            LiftUp.setPosition(LiftUp.getPosition()+10);
+//        } else if (dpad_down){
+//            LiftUp.setPosition(LiftUp.getPosition()-10);
+//        } else {
+//            LiftUp.setPosition(LiftUp.getPosition());
+//        }
+
+
+
+
+
+
 
         //Retrieve driving values from controller
         double y = gamepad1.left_stick_y * 0.8; // Is reversed
@@ -138,21 +165,6 @@ public class MotorTest extends OpMode {
 
         telemetry.addData("Pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
         telemetry.addData("Color: ", ""+pipeline.getColor());
-
-        switch (pipeline.getColor()) {
-            case 'r':
-                //red
-            case 'g':
-                //green
-            case 'b':
-                //blue
-            case 'e':
-                //not looking at cone
-            case 'a':
-                //camera config error
-            default:
-                //how tf did you get here
-        }
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

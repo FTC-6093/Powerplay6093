@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.teamcode;
-import androidx.annotation.NonNull;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
 
 
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
@@ -33,7 +28,7 @@ public class Auto1 extends LinearOpMode {
     private DcMotor FRDrive = null;
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
-    private DcMotor VertLift = null;
+//    private DcMotor VertLift = null;
     OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
     private  BNO055IMU imu;
@@ -47,7 +42,7 @@ public class Auto1 extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        initializeIMU();
+//        initializeIMU();
 
         waitForStart();
 
@@ -60,7 +55,8 @@ public class Auto1 extends LinearOpMode {
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -75,90 +71,93 @@ public class Auto1 extends LinearOpMode {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-        BLDrive.setDirection(DcMotor.Direction.FORWARD);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
+        BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        VertLift.setDirection(DcMotor.Direction.FORWARD);
+//        VertLift.setDirection(DcMotor.Direction.FORWARD);
 
-        webcam.setPipeline(pipeline);
+        webcam.setPipeline(pipeline); //Actually set the pipeline??? lez go
 
         FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Wait for the game to start (driver presses PLAY)
 
         runtime.reset();
 
-//==================================================================================================
         //Jaren, run code here
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
-        driveStraight(45, 0.5, FRDrive, FLDrive, BLDrive, BRDrive);
+
+
+
+
+
+
+        driveStraight(12,0.75);
         int i = 0;
-        boolean doBreak = false;
-        while (i < 100000 || doBreak) {
+        char color = pipeline.getColor();
+        while (i < 5000){
             i++;
-            char c = pipeline.getColor();
-            switch (c) {
+            switch (color) {
                 case 'r':
-                    IMUTurn(-90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    driveStraight(36, 0.5, FLDrive, FRDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Red Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    strafeLeft(24, 0.75);
+                    i = 5001;
                     break;
                 case 'g':
-                    driveStraight(43, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Green Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    i = 5001;
                     break;
                 case 'b':
-                    IMUTurn(90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    driveStraight(36, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Blue Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    strafeRight(24, 0.75);
+                    i = 5001;
                     break;
-                case 'e':
-                    IMUTurn(10, 0.2, FRDrive, FLDrive, BRDrive, BLDrive);
-                    IMUTurn(-10, 0.2, FRDrive, FLDrive, BLDrive, BRDrive);
-                    telemetry.addData("Camera Status: ", "Camera Searching");
-                    break;
-                case 'a':
-                    //trigger plan c
-                    //panic_and_catch_fire("gun");
-                    telemetry.addData("Camera Status: ", "Camera malfunction");
-                    break;
-                default:
-                    //logically, this case is impossible
-                    //trigger plan d
-                    //panic_and_catch_fire("nuke");
-                    telemetry.addData("Camera Status: ", "??????"+pipeline.getColor());
+//                case 'e':
+//                    telemetry.addData("Can't find cone","");
+//                    telemetry.update();
+//                    break;
+//                case 'a':
+//                    telemetry.addData("Camera config issue", "");
+//                    telemetry.update();
+//                    break;
+//                default:
+//                    telemetry.addData("Shouldn't be here", "");
+//                    telemetry.update();
+//                    break;
             }
-            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
-            telemetry.update();
+            color = pipeline.getColor();
         }
 
-        sleep(2000);
+        telemetry.addData("Color: ", ""+color);
+        telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
+        telemetry.update();
 
+//        while (true) {}
+
+
+
+        }
+
+
+
+
+
+        //snip ftc code
+        /*
         //This is were we put the code we want
-
-        //IMUTurn(360, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-        //sleep(1000);
-        //IMUTurn(90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-        //sleep(1000);
-        //IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-        //sleep(1000);
-
-
-
-
-
+        IMUTurn(360, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        sleep(1000);
+        IMUTurn(90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        sleep(1000);
+        IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        sleep(1000);
         //This section is if we are the robot closer to the storage unit
-
-
-        /*IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        IMUTurn(-90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
         driveStraight(25, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
         //Use a motor to return duck from carousel here
         sleep(1000);
@@ -167,27 +166,23 @@ public class Auto1 extends LinearOpMode {
         driveStraight(-12, -0.5, FLDrive, FRDrive, BLDrive, BRDrive);
         IMUTurn(90, .5, FLDrive, FRDrive, BLDrive, BRDrive);
         driveStraight(120, 0.9, FLDrive, FRDrive, BLDrive, BRDrive);
-*/
+
         //This part is if we are the robot nearest to the warehouse and the other team has working auto
-            /*driveStraight(2, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
-            sleep(5000);
-            IMUTurn(-83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-            driveStraight(60, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
-            //Use a motor to return duck from carousel here
-            sleep(1000)
-            IMUTurn(83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-            driveStraight(10, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
-            driveStraight(-5, -0.5, FLDrive, FRDrive, BLDrive, BRDrive);
-            IMUTurn(83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
-            driveStraight(50, 0.9, FLDrive, FRDrive, BLDrive, BRDrive);
-             */
+        driveStraight(2, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+        sleep(5000);
+        IMUTurn(-83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        driveStraight(60, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+        //Use a motor to return duck from carousel here
+        sleep(1000);
+        IMUTurn(83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        driveStraight(10, 0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+        driveStraight(-5, -0.5, FLDrive, FRDrive, BLDrive, BRDrive);
+        IMUTurn(83.5, .5, FLDrive, FRDrive, BLDrive, BRDrive);
+        driveStraight(50, 0.9, FLDrive, FRDrive, BLDrive, BRDrive);
+        */
 
 
-        telemetry.update();
         //sleep(5000);
-    }
-
-
 
 
     public void initializeIMU() {
@@ -201,6 +196,8 @@ public class Auto1 extends LinearOpMode {
             this.sleep(50);
         }
     }
+
+    //snip old IMUTurn
     /*
         public void IMUTurn (double angle, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight){
 
@@ -258,7 +255,7 @@ public class Auto1 extends LinearOpMode {
                     backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE)
                 }
             }
-                    }*/
+//                    }*/
     public void IMUTurn (double angle, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight){
 
         double startAngle = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
@@ -280,14 +277,6 @@ public class Auto1 extends LinearOpMode {
                 Math.abs(robotTurnedAngle) < Math.abs(angle)) {
             robotTurnedAngle = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle-startAngle;
 
-
-
-
-
-
-
-
-
             if((Math.abs(robotTurnedAngle)) >= (Math.abs(angle)))
             {
                 frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -302,12 +291,10 @@ public class Auto1 extends LinearOpMode {
             }
             if(robotTurnedAngle>180) {
                 robotTurnedAngle = robotTurnedAngle - 360;
-
             }
 
             if(robotTurnedAngle<-180) {
                 robotTurnedAngle = robotTurnedAngle + 360;
-
             }
 
             if(angle<0) {
@@ -327,63 +314,201 @@ public class Auto1 extends LinearOpMode {
         }
     }
 
-    public void driveStraight(double inch, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight) {
+    public void driveStraight(double inch, double power) {
         //encoder's resolution: 537.6 in
         //Going straight constant: 42.78
+        // final double ticksPerInch = 95.94  ;
+
+
+        // only strafing needs doubling ticks per inch
         final double ticksPerInch = TICKS_PER_INCH;
-        // final double ticksPerInch = 95.94  ; //ticks doubled because the rollers on the mechanam wheels apply some force sideways
+
+        // correct for weight imbalances
+        final double directionBias = 0;
 
         //Reset encoder positions
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         int tickNeeded = (int) (ticksPerInch * inch);
 
         int FlPosition;
         int FrPosition;
-        int BLpositiom;
-        int Brposition;
+        int BlPosition;
+        int BrPosition;
 
         //How many ticks the motor needs to move
-        frontLeft.setTargetPosition(tickNeeded);
-        frontRight.setTargetPosition(tickNeeded);
-        backLeft.setTargetPosition(tickNeeded);
-        backRight.setTargetPosition(tickNeeded);
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
 
         //Changes what information we send to the motors.
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Set the power value for each motor
-        frontLeft.setPower(power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(power);
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
 
-        FlPosition = frontLeft.getCurrentPosition();
-        FrPosition = frontRight.getCurrentPosition();
-        BLpositiom = backLeft.getCurrentPosition();
-        Brposition = backRight.getCurrentPosition();
 
-        while (this.opModeIsActive() && (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy())) {
-            //We are just waiting until the motors reach the position (based on the ticks passed)
-//             telemetry.addData("FL Position", FlPosition);
-//            telemetry.addData("Fr Position", FrPosition);
-//            telemetry.addData("Bl Position", BLpositiom);
-//            telemetry.addData("Br Position", Brposition);
-//             telemetry.addData("Ticks Needed", tickNeeded);
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
+//            We are just waiting until the motors reach the position (based on the ticks passed)
+             telemetry.addData("Fl Position", ""+FlPosition);
+            telemetry.addData("Fr Position", ""+FrPosition);
+            telemetry.addData("Bl Position", ""+BlPosition);
+            telemetry.addData("Br Position", ""+BrPosition);
+             telemetry.addData("Ticks Needed", ""+tickNeeded);
             telemetry.addData("Success!", null);
 
             telemetry.update();
         }
         //When the motors have passed the required ticks, stop each motor
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
+    }
+
+    public void strafeRight(double inch, double power) {
+        //encoder's resolution: 537.6 in
+        //Going straight constant: 42.78
+        // final double ticksPerInch = 95.94  ;
+
+
+        // driving is fine, strafing needs double
+        final double ticksPerInch = TICKS_PER_INCH * 1;
+
+        // correct for weight imbalances
+        final double directionBias = 0;
+
+        //Reset encoder positions
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int tickNeeded = (int) (ticksPerInch * inch);
+
+        int FlPosition;
+        int FrPosition;
+        int BlPosition;
+        int BrPosition;
+
+        //How many ticks the motor needs to move
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(-tickNeeded);
+        BLDrive.setTargetPosition(-tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
+
+        //Changes what information we send to the motors.
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Set the power value for each motor
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
+
+
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
+//            We are just waiting until the motors reach the position (based on the ticks passed)
+            telemetry.addData("Fl Position", ""+FlPosition);
+            telemetry.addData("Fr Position", ""+FrPosition);
+            telemetry.addData("Bl Position", ""+BlPosition);
+            telemetry.addData("Br Position", ""+BrPosition);
+            telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Success!", null);
+
+            telemetry.update();
+        }
+        //When the motors have passed the required ticks, stop each motor
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
+    }
+
+    public void strafeLeft(double inch, double power) {
+        //encoder's resolution: 537.6 in
+        //Going straight constant: 42.78
+        // final double ticksPerInch = 95.94  ;
+
+
+        // driving is fine, strafing needs double
+        final double ticksPerInch = TICKS_PER_INCH * 1;
+
+        // correct for weight imbalances
+        final double directionBias = 0;
+
+        //Reset encoder positions
+        FLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BLDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BRDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        int tickNeeded = (int) (ticksPerInch * inch);
+
+        int FlPosition;
+        int FrPosition;
+        int BlPosition;
+        int BrPosition;
+
+        //How many ticks the motor needs to move
+        FLDrive.setTargetPosition(-tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(-tickNeeded);
+
+        //Changes what information we send to the motors.
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Set the power value for each motor
+        FLDrive.setPower(power-directionBias);
+        FRDrive.setPower(power+directionBias);
+        BLDrive.setPower(power-directionBias);
+        BRDrive.setPower(power+directionBias);
+
+
+        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+            FlPosition = FLDrive.getCurrentPosition();
+            FrPosition = FRDrive.getCurrentPosition();
+            BlPosition = BLDrive.getCurrentPosition();
+            BrPosition = BRDrive.getCurrentPosition();
+//            We are just waiting until the motors reach the position (based on the ticks passed)
+            telemetry.addData("Fl Position", ""+FlPosition);
+            telemetry.addData("Fr Position", ""+FrPosition);
+            telemetry.addData("Bl Position", ""+BlPosition);
+            telemetry.addData("Br Position", ""+BrPosition);
+            telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Success!", null);
+
+            telemetry.update();
+        }
+        //When the motors have passed the required ticks, stop each motor
+        FLDrive.setPower(0);
+        FRDrive.setPower(0);
+        BLDrive.setPower(0);
+        BRDrive.setPower(0);
     }
 }
