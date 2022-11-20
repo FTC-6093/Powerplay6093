@@ -33,25 +33,25 @@ public class ColorPipeline extends OpenCvPipeline {
         return 'e';
     }
 
-//    private static char checkForHSV(double h, double error) {
-////        assert h <= 60;
-//        double horiz_rot = (h-60) % 360;
-//
-//        //red = 300
-//        if (error-300 < horiz_rot && horiz_rot < error+300) {
-//            return 'r';
-//        }
-//        //green = 60
-//        if (error-60 < horiz_rot && horiz_rot < error+60) {
-//            return 'g';
-//        }
-//        //blue = 180
-//        if (error-180 < horiz_rot && horiz_rot < error+180) {
-//            return 'b';
-//        }
-//
-//        return 'e';
-//    }
+    private static char checkForHSV(double h, double error) {
+//        assert h <= 60;
+        double horiz_rot = (h-60) % 360;
+
+        //red = 300
+        if (300-error < horiz_rot && horiz_rot < 300+error) {
+            return 'r';
+        }
+        //green = 60
+        if (60-error < horiz_rot && horiz_rot < 60+error) {
+            return 'g';
+        }
+        //blue = 180
+        if (180-error < horiz_rot && horiz_rot < 180+error) {
+            return 'b';
+        }
+
+        return 'e';
+    }
 
 
     @Override
@@ -62,7 +62,7 @@ public class ColorPipeline extends OpenCvPipeline {
     public Mat processFrame(@NonNull Mat input) {
         //screen is 720 by 1280
         input.copyTo(inputMask);
-        Imgproc.cvtColor(inputMask,inputMask,Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor(inputMask,inputMask,Imgproc.COLOR_RGB2HSV);
 //            Imgproc.Canny(input, inputMask, 250, 800);
 //            Imgproc.blur(inputMask, inputMask, boxSize);
 //            //assuming Mat.size() gets mat size
@@ -79,13 +79,11 @@ public class ColorPipeline extends OpenCvPipeline {
     }
 
     public char getColor() {
-        double[] rgb = inputMask.get(360, 640);
-        if (rgb != null) {
-            if (rgb.length == 4 || rgb.length == 3) {
-                double r = rgb[0];
-                double g = rgb[1];
-                double b = rgb[1];
-                return checkForRGB(r,g,b, 60);
+        double[] hsv = inputMask.get(360, 640);
+        if (hsv != null) {
+            if (hsv.length == 4 || hsv.length == 3) {
+                double h = hsv[0];
+                return checkForHSV(h, 60);
             }
         }
         return 'a';
