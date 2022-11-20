@@ -17,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
+import java.util.Arrays;
+
 @Autonomous(name = "Auto 1")
 //@Disabled
 public class Auto1 extends LinearOpMode {
@@ -26,7 +28,7 @@ public class Auto1 extends LinearOpMode {
     private DcMotor FRDrive = null;
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
-    private DcMotor VertLift = null;
+//    private DcMotor VertLift = null;
     OpenCvWebcam webcam = null;
     ColorPipeline pipeline = new ColorPipeline();
     private  BNO055IMU imu;
@@ -40,7 +42,7 @@ public class Auto1 extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        initializeIMU();
+//        initializeIMU();
 
         waitForStart();
 
@@ -53,7 +55,8 @@ public class Auto1 extends LinearOpMode {
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -72,9 +75,9 @@ public class Auto1 extends LinearOpMode {
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
 
-        VertLift.setDirection(DcMotor.Direction.FORWARD);
+//        VertLift.setDirection(DcMotor.Direction.FORWARD);
 
-        webcam.setPipeline(pipeline);
+        webcam.setPipeline(pipeline); //Actually set the pipeline??? lez go
 
         FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -88,57 +91,60 @@ public class Auto1 extends LinearOpMode {
         //Jaren, run code here
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
-        driveStraight(12, 0.75);
-        sleep(4000);
-        strafeRight(12, 0.75);
-        sleep(4000);
-        strafeLeft(12, 0.75);
 
-        //snip color cases
-/*
+
+
+
+
+
+        driveStraight(12,0.75);
         int i = 0;
-        boolean doBreak = false;
-        while (i < 100000 || doBreak) {
+        char color = pipeline.getColor();
+        while (i < 5000){
             i++;
-            char c = pipeline.getColor();
-            switch (c) {
+            switch (color) {
                 case 'r':
-                    IMUTurn(-90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    driveStraight(36, 0.5, FLDrive, FRDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Red Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    strafeLeft(24, 0.75);
+                    i = 5001;
                     break;
                 case 'g':
-                    driveStraight(43, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Green Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    i = 5001;
                     break;
                 case 'b':
-                    IMUTurn(90, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    driveStraight(36, 0.5, FRDrive, FLDrive, BRDrive, BLDrive);
-                    telemetry.addData("Camera Status: ", "Blue Detected");
-                    doBreak = true;
+                    driveStraight(12, 0.75);
+                    strafeRight(24, 0.75);
+                    i = 5001;
                     break;
-                case 'e':
-                    IMUTurn(10, 0.2, FRDrive, FLDrive, BRDrive, BLDrive);
-                    IMUTurn(-10, 0.2, FRDrive, FLDrive, BLDrive, BRDrive);
-                    telemetry.addData("Camera Status: ", "Camera Searching");
-                    break;
-                case 'a':
-                    //trigger plan c
-                    //panic_and_catch_fire("gun");
-                    telemetry.addData("Camera Status: ", "Camera malfunction");
-                    break;
-                default:
-                    //logically, this case is impossible
-                    //trigger plan d
-                    //panic_and_catch_fire("nuke");
-                    telemetry.addData("Camera Status: ", "??????"+pipeline.getColor());
+//                case 'e':
+//                    telemetry.addData("Can't find cone","");
+//                    telemetry.update();
+//                    break;
+//                case 'a':
+//                    telemetry.addData("Camera config issue", "");
+//                    telemetry.update();
+//                    break;
+//                default:
+//                    telemetry.addData("Shouldn't be here", "");
+//                    telemetry.update();
+//                    break;
             }
-            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
-            telemetry.update();
+            color = pipeline.getColor();
         }
-*/
+
+        telemetry.addData("Color: ", ""+color);
+        telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
+        telemetry.update();
+
+//        while (true) {}
+
+
+
+        }
+
+
+
 
 
         //snip ftc code
@@ -175,9 +181,9 @@ public class Auto1 extends LinearOpMode {
         driveStraight(50, 0.9, FLDrive, FRDrive, BLDrive, BRDrive);
         */
 
-        telemetry.update();
+
         //sleep(5000);
-    }
+
 
     public void initializeIMU() {
         this.imu = this.hardwareMap.get(BNO055IMU.class, "imu");
@@ -190,6 +196,8 @@ public class Auto1 extends LinearOpMode {
             this.sleep(50);
         }
     }
+
+    //snip old IMUTurn
     /*
         public void IMUTurn (double angle, double power, DcMotor frontLeft, DcMotor frontRight, DcMotor backLeft, DcMotor backRight){
 
@@ -283,12 +291,10 @@ public class Auto1 extends LinearOpMode {
             }
             if(robotTurnedAngle>180) {
                 robotTurnedAngle = robotTurnedAngle - 360;
-
             }
 
             if(robotTurnedAngle<-180) {
                 robotTurnedAngle = robotTurnedAngle + 360;
-
             }
 
             if(angle<0) {
@@ -381,7 +387,7 @@ public class Auto1 extends LinearOpMode {
 
 
         // driving is fine, strafing needs double
-        final double ticksPerInch = TICKS_PER_INCH * 1.5;
+        final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
         final double directionBias = 0;
@@ -447,7 +453,7 @@ public class Auto1 extends LinearOpMode {
 
 
         // driving is fine, strafing needs double
-        final double ticksPerInch = TICKS_PER_INCH * 1.5;
+        final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
         final double directionBias = 0;
