@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,20 +7,15 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Arrays;
 
 @TeleOp (name = "Motor Test", group = "Iterative Opmode")
-public class MotorTest extends OpMode {
+public class EmmyMotorTest extends OpMode {
 
     //Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -38,7 +27,7 @@ public class MotorTest extends OpMode {
     private CRServo OpenClaw = null;
     private CRServo LiftUp = null;
     OpenCvWebcam webcam = null;
-    ColorPipeline pipeline = new ColorPipeline();
+    EmmyColorPipeline pipeline = new EmmyColorPipeline();
     
     int HOW_LONG_MAX = 0;
     final double powerMultiplier = 0.5;

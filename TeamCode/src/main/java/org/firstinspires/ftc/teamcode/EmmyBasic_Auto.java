@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode;
 
-public class Basic_Auto {
+public class EmmyBasic_Auto {
 }

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp (name = "Motor Test Ramping", group = "Iterative Opmode")
-public class MotorTestRamping extends OpMode {
+public class EmmyMotorTestRamping extends OpMode {
 
     //Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();

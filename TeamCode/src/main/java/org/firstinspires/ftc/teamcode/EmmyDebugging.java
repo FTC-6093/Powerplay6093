@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Autonomous(name = "Debug")
-public class Debugging extends LinearOpMode {
+public class EmmyDebugging extends LinearOpMode {
     // create all debugging objects
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor FLDrive = null;
@@ -23,7 +23,7 @@ public class Debugging extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     private OpenCvWebcam webcam = null;
-    private ColorPipeline pipeline = new ColorPipeline();
+    private EmmyColorPipeline pipeline = new EmmyColorPipeline();
 //    private BNO055IMU imu;
 
     // we need to extract this into a config file somehow

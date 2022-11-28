@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp (name = "CompCode", group = "Iterative Opmode")
-public class CompCode extends OpMode {
+public class EmmyCompCode extends OpMode {
 
     //Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -19,7 +19,7 @@ public class CompCode extends OpMode {
     private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
     private DcMotor BRDrive = null;
-    private BNO055IMU imu = null;
+//    private BNO055IMU imu = null;
 //    private DcMotor VertLift = null;
 //    private CRServo OpenClaw = null;
 //    private CRServo LiftUp = null;
@@ -115,7 +115,7 @@ public class CompCode extends OpMode {
 
         //Retrieve driving values from controller
         double y = gamepad1.left_stick_y * .8; // Is reversed
-        double x = gamepad1.left_stick_x * .8;// Counteract imperfect strafing
+        double x = gamepad1.left_stick_x * -.8;// Counteract imperfect strafing
         double rx = gamepad1.right_stick_x * .8;
 
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
@@ -132,15 +132,15 @@ public class CompCode extends OpMode {
         double frontRightPower;
         double backRightPower;
         if (up) {
-            frontLeftPower = 0.8;
-            backLeftPower = -0.8;
-            frontRightPower = -0.8;
-            backRightPower = 0.8;
-        } else if (down) {
             frontLeftPower = -0.8;
             backLeftPower = 0.8;
             frontRightPower = 0.8;
             backRightPower = -0.8;
+        } else if (down) {
+            frontLeftPower = 0.8;
+            backLeftPower = -0.8;
+            frontRightPower = -0.8;
+            backRightPower = 0.8;
         } else {
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             frontLeftPower = (y + x - rx) / denominator;

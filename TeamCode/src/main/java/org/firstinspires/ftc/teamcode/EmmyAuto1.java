@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 @Autonomous(name = "Auto 1")
 //@Disabled
-public class Auto1 extends LinearOpMode {
+public class EmmyAuto1 extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor FLDrive = null;
@@ -30,7 +30,7 @@ public class Auto1 extends LinearOpMode {
     private DcMotor BRDrive = null;
 //    private DcMotor VertLift = null;
     OpenCvWebcam webcam = null;
-    ColorPipeline pipeline = new ColorPipeline();
+    EmmyColorPipeline pipeline = new EmmyColorPipeline();
     private  BNO055IMU imu;
     final double WHEEL_DIAMETER = 3.875;
     final double TICKS_PER_ROTATION = 1120;

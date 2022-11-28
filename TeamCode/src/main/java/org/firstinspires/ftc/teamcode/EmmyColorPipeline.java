@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -9,7 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 
-public class ColorPipeline extends OpenCvPipeline {
+public class EmmyColorPipeline extends OpenCvPipeline {
     Mat inputMask = new Mat();
     Size boxSize = new Size(5, 5);
     Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
