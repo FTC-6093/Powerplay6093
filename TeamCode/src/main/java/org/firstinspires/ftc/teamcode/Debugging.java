@@ -38,6 +38,10 @@ public class Debugging extends LinearOpMode {
     ArrayList<String> teleValues;
 
     private void updateTelemetry() {
+        // short circuit if the arrays are not initialized
+        if (teleKeys == null || teleValues == null) {
+            return;
+        }
         assert teleKeys.size() == teleValues.size(): "Should be the same size";
         for (int i = 0; i < teleKeys.size(); i++) {
             telemetry.addData(teleKeys.get(i), teleValues.get(i));
@@ -46,6 +50,10 @@ public class Debugging extends LinearOpMode {
     }
 
     private void addTelemetry(String key, String value) {
+        // short circuit if the arrays are not initialized
+        if (teleKeys == null || teleValues == null) {
+            return;
+        }
         if (teleKeys.contains(key)) {
             teleValues.set(teleKeys.indexOf(key), value);
         } else {
@@ -164,15 +172,15 @@ public class Debugging extends LinearOpMode {
     private void driveStraight(int inches, double power) {
         int targetEncoderPosition = (int) TICKS_PER_INCH * inches;
 
-        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         FLDrive.setTargetPosition(targetEncoderPosition);
         FRDrive.setTargetPosition(targetEncoderPosition);
         BLDrive.setTargetPosition(targetEncoderPosition);
         BRDrive.setTargetPosition(targetEncoderPosition);
+
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         FLDrive.setPower(power);
         FRDrive.setPower(power);
@@ -183,16 +191,16 @@ public class Debugging extends LinearOpMode {
     private void strafeLeft(int inches, double power) {
         int targetEncoderPosition = (int) TICKS_PER_INCH * inches;
 
-        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         // the only difference between strafing and driving is 2 opposite motors are flipped
         FLDrive.setTargetPosition(targetEncoderPosition);
         FRDrive.setTargetPosition(-targetEncoderPosition);
         BLDrive.setTargetPosition(-targetEncoderPosition);
         BRDrive.setTargetPosition(targetEncoderPosition);
+
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         FLDrive.setPower(power);
         FRDrive.setPower(power);
@@ -203,16 +211,16 @@ public class Debugging extends LinearOpMode {
     private void strafeRight(int inches, double power) {
         int targetEncoderPosition = (int) TICKS_PER_INCH * inches;
 
-        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         // the only difference between strafing and driving is 2 opposite motors are flipped
         FLDrive.setTargetPosition(-targetEncoderPosition);
         FRDrive.setTargetPosition(targetEncoderPosition);
         BLDrive.setTargetPosition(targetEncoderPosition);
         BRDrive.setTargetPosition(-targetEncoderPosition);
+
+        FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        FRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        BRDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         FLDrive.setPower(power);
         FRDrive.setPower(power);

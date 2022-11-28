@@ -103,9 +103,12 @@ public class CompCode extends OpMode {
 
         // Retrieve lift values from controller
 
-
-
-        double botHeading = -imu.getAngularOrientation().firstAngle;
+//        double botHeading;
+//        if (imu != null) {
+//            botHeading = -imu.getAngularOrientation().firstAngle;
+//        } else {
+//            botHeading = 0;
+//        }
 
 
 
@@ -115,20 +118,36 @@ public class CompCode extends OpMode {
         double x = gamepad1.left_stick_x * .8;// Counteract imperfect strafing
         double rx = gamepad1.right_stick_x * .8;
 
-        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+//        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+//        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-//        boolean up = (gamepad2.left_trigger > 0);
-//        boolean down = (gamepad2.right_trigger > 0);
+        boolean up = (gamepad2.left_trigger > 0);
+        boolean down = (gamepad2.right_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (rotY + rotX - rx) / denominator;
-        double backLeftPower = (rotY - rotX - rx) / denominator;
-        double frontRightPower = (rotY - rotX + rx) / denominator;
-        double backRightPower = (rotY + rotX + rx) / denominator;
+        double frontLeftPower;
+        double backLeftPower;
+        double frontRightPower;
+        double backRightPower;
+        if (up) {
+            frontLeftPower = 0.8;
+            backLeftPower = -0.8;
+            frontRightPower = -0.8;
+            backRightPower = 0.8;
+        } else if (down) {
+            frontLeftPower = -0.8;
+            backLeftPower = 0.8;
+            frontRightPower = 0.8;
+            backRightPower = -0.8;
+        } else {
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            frontLeftPower = (y + x - rx) / denominator;
+            backLeftPower = (y - x - rx) / denominator;
+            frontRightPower = (y - x + rx) / denominator;
+            backRightPower = (y + x + rx) / denominator;
+        }
 
         FLDrive.setPower(frontLeftPower*motorMultiplier);
         FRDrive.setPower(frontRightPower*motorMultiplier);
@@ -142,7 +161,6 @@ public class CompCode extends OpMode {
 //        }else{
 //            VertLift.setPower(0);
 //        }
-
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
