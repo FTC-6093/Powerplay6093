@@ -23,7 +23,7 @@ public class EmmyCompCode extends OpMode {
 //    private DcMotor VertLift = null;
 //    private CRServo OpenClaw = null;
 //    private CRServo LiftUp = null;
-    final double motorMultiplier = 0.85;
+    final double motorMultiplier = 0.65;
 
 
     @Override
@@ -110,9 +110,6 @@ public class EmmyCompCode extends OpMode {
 //            botHeading = 0;
 //        }
 
-
-
-
         //Retrieve driving values from controller
         double y = gamepad1.left_stick_y * .8; // Is reversed
         double x = gamepad1.left_stick_x * -.8;// Counteract imperfect strafing
@@ -122,8 +119,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-        boolean up = (gamepad1.left_trigger > 0);
-        boolean down = (gamepad1.right_trigger > 0);
+        boolean up = (gamepad1.right_trigger > 0);
+        boolean down = (gamepad1.left_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
