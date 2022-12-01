@@ -148,7 +148,7 @@ public class EmmyMotorTest extends OpMode {
             VertLift.setPower(1.0);
         } else if (!down && up){
             VertLift.setPower(-1.0);
-        }else{
+        } else {
             VertLift.setPower(0);
         }
 
