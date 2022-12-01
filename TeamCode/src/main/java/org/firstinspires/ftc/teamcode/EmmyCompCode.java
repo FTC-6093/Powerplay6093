@@ -130,12 +130,12 @@ public class EmmyCompCode extends OpMode {
         double backLeftPower;
         double frontRightPower;
         double backRightPower;
-        if (gamepad1.left_trigger > 0) {
+        if (up) {
             frontLeftPower = -0.8;
             backLeftPower = 0.8;
             frontRightPower = 0.8;
             backRightPower = -0.8;
-        } else if (gamepad1.right_trigger > 0) {
+        } else if (down) {
             frontLeftPower = 0.8;
             backLeftPower = -0.8;
             frontRightPower = -0.8;
