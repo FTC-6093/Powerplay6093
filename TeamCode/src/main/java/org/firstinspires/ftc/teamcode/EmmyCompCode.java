@@ -121,8 +121,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-        boolean up = (gamepad2.left_trigger > 0);
-        boolean down = (gamepad2.right_trigger > 0);
+        boolean up = (gamepad1.left_trigger > 0);
+        boolean down = (gamepad1.right_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
