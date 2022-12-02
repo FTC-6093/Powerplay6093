@@ -74,12 +74,19 @@ public class EmmyCompCode extends OpMode {
 
     @Override
     public void loop() { //Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-
+        boolean autodrive = gamepad1.back;
         // get servos
-
+        if(autodrive) {
+            BRDrive.setPower(1);
+            BLDrive.setPower(1);
+            FRDrive.setPower(1);
+            FLDrive.setPower(1);
+        }
         boolean servoClose = gamepad2.dpad_left;
         boolean servoOpen = gamepad2.dpad_right;
-//
+        boolean DanceParty = gamepad1.back;
+        int DPS = 0;
+        int DPSE = 30;
         boolean tiltUp = gamepad2.dpad_up;
         boolean tiltDown = gamepad2.dpad_down;
 
