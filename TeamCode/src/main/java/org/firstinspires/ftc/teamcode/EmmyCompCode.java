@@ -74,19 +74,13 @@ public class EmmyCompCode extends OpMode {
 
     @Override
     public void loop() { //Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-        boolean autodrive = gamepad1.back;
-        // get servos
-        if(autodrive) {
-            BRDrive.setPower(1);
-            BLDrive.setPower(1);
-            FRDrive.setPower(1);
-            FLDrive.setPower(1);
-        }
+
+
+        boolean holdT = false;
+        boolean OnPress = gamepad1.back;
+
         boolean servoClose = gamepad2.dpad_left;
         boolean servoOpen = gamepad2.dpad_right;
-        boolean DanceParty = gamepad1.back;
-        int DPS = 0;
-        int DPSE = 30;
         boolean tiltUp = gamepad2.dpad_up;
         boolean tiltDown = gamepad2.dpad_down;
 
@@ -128,8 +122,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-        boolean up = (gamepad1.left_trigger > 0);
-        boolean down = (gamepad1.right_trigger > 0);
+        boolean up = (gamepad2.left_trigger > 0);
+        boolean down = (gamepad2.right_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
@@ -137,23 +131,23 @@ public class EmmyCompCode extends OpMode {
         double backLeftPower;
         double frontRightPower;
         double backRightPower;
-        if (up) {
-            frontLeftPower = -0.8;
-            backLeftPower = 0.8;
-            frontRightPower = 0.8;
-            backRightPower = -0.8;
-        } else if (down) {
-            frontLeftPower = 0.8;
-            backLeftPower = -0.8;
-            frontRightPower = -0.8;
-            backRightPower = 0.8;
-        } else {
+//        if (up) {
+//            frontLeftPower = -0.8;
+//            backLeftPower = 0.8;
+//            frontRightPower = 0.8;
+//            backRightPower = -0.8;
+//        } else if (down) {
+//            frontLeftPower = 0.8;
+//            backLeftPower = -0.8;
+//            frontRightPower = -0.8;
+//            backRightPower = 0.8;
+
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             frontLeftPower = (y + x - rx) / denominator;
             backLeftPower = (y - x - rx) / denominator;
             frontRightPower = (y - x + rx) / denominator;
             backRightPower = (y + x + rx) / denominator;
-        }
+
 
         FLDrive.setPower(frontLeftPower*motorMultiplier);
         FRDrive.setPower(frontRightPower*motorMultiplier);
@@ -161,15 +155,21 @@ public class EmmyCompCode extends OpMode {
         BRDrive.setPower(backRightPower*motorMultiplier);
 
         if (down && !up) {
-            VertLift.setPower(0.65);
+            VertLift.setPower(VertLift.getPower() - 0.4);
+            telemetry.addData("Lift Status: ", down);
+            telemetry.update();
         } else if (!down && up){
-            VertLift.setPower(-0.65);
+            VertLift.setPower(VertLift.getPower() + 0.4);
+            telemetry.addData("Lift Status: ",up);
+            telemetry.update();
         }else{
             VertLift.setPower(0);
+            telemetry.addData("Lift Status: ", up);
+            telemetry.update();
         }
 
         // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+//        telemetry.addData("Status", "Run Time: " + runtime.toString());
         // telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
         telemetry.update();
     }
