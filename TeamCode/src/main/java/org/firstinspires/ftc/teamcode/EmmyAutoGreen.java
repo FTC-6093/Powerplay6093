@@ -60,7 +60,7 @@ public class EmmyAutoGreen extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         runtime.reset();
 
-        driveStraight(12, 0.75);
+        driveStraight(8.5, 0.75);
         driveStraight(12, 0.75);
 
 

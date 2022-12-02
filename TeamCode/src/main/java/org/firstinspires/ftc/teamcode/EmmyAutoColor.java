@@ -68,8 +68,6 @@ public class EmmyAutoColor extends LinearOpMode {
         webcam.openCameraDevice();
         webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
 
-
-
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -96,7 +94,7 @@ public class EmmyAutoColor extends LinearOpMode {
 
         sleep(500);
 
-        driveStraight(12,0.75);
+        driveStraight(8.5,0.75);
         int i = 0;
         char color = pipeline.getColor();
         while (i < 5000){
