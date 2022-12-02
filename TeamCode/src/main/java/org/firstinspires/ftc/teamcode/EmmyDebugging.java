@@ -150,12 +150,7 @@ public class EmmyDebugging extends LinearOpMode {
     }
 
     private void waitForMotors() {
-        while (
-                FLDrive.isBusy() ||
-                FRDrive.isBusy() ||
-                BLDrive.isBusy() ||
-                BRDrive.isBusy()
-        ) {
+        do {
             // telemetry
             telemetry.addData("FLDrive: ", "" + FLDrive.getCurrentPosition());
             telemetry.addData("FRDrive: ", "" + FRDrive.getCurrentPosition());
@@ -166,7 +161,12 @@ public class EmmyDebugging extends LinearOpMode {
             telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
 
             telemetry.update();
-        }
+        } while (
+                FLDrive.isBusy() ||
+                FRDrive.isBusy() ||
+                BLDrive.isBusy() ||
+                BRDrive.isBusy()
+        );
     }
 
     private void driveStraight(int inches, double power) {
