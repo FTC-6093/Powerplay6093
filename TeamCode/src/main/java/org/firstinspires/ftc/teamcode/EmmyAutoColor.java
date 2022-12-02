@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 
-import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
@@ -21,7 +20,7 @@ import java.util.Arrays;
 
 @Autonomous(name = "Auto 1")
 //@Disabled
-public class EmmyAuto1 extends LinearOpMode {
+public class EmmyAutoColor extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor FLDrive = null;
@@ -69,8 +68,6 @@ public class EmmyAuto1 extends LinearOpMode {
         webcam.openCameraDevice();
         webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
 
-
-
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -97,7 +94,7 @@ public class EmmyAuto1 extends LinearOpMode {
 
         sleep(500);
 
-        driveStraight(12,0.75);
+        driveStraight(8.5,0.75);
         int i = 0;
         char color = pipeline.getColor();
         while (i < 5000){
