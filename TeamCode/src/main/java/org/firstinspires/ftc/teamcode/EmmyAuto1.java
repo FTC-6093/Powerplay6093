@@ -57,16 +57,19 @@ public class EmmyAuto1 extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 //        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
 
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+//            }
+//            @Override
+//            public void onError(int errorCode) {
+//            }
+//        });
+        webcam.openCameraDevice();
+        webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
 
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode) {
-            }
-        });
+
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -92,10 +95,7 @@ public class EmmyAuto1 extends LinearOpMode {
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
 
-
-
-
-
+        sleep(500);
 
         driveStraight(12,0.75);
         int i = 0;
@@ -118,6 +118,10 @@ public class EmmyAuto1 extends LinearOpMode {
                     i = 5001;
                     break;
 //                case 'e':
+//                case 'a':
+//                    sleep(2000);
+//                    break;
+                //                case 'e':
 //                    telemetry.addData("Can't find cone","");
 //                    telemetry.update();
 //                    break;
@@ -324,6 +328,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
@@ -390,6 +395,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
@@ -456,6 +462,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
