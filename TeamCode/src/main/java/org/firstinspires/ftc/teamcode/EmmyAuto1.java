@@ -412,10 +412,10 @@ public class EmmyAuto1 extends LinearOpMode {
         int BrPosition;
 
         //How many ticks the motor needs to move
-        FLDrive.setTargetPosition(-tickNeeded);
-        FRDrive.setTargetPosition(tickNeeded);
-        BLDrive.setTargetPosition(tickNeeded);
-        BRDrive.setTargetPosition(-tickNeeded);
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(-tickNeeded);
+        BLDrive.setTargetPosition(-tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
 
         //Changes what information we send to the motors.
         FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -479,10 +479,10 @@ public class EmmyAuto1 extends LinearOpMode {
         int BrPosition;
 
         //How many ticks the motor needs to move
-        FLDrive.setTargetPosition(tickNeeded);
-        FRDrive.setTargetPosition(-tickNeeded);
-        BLDrive.setTargetPosition(-tickNeeded);
-        BRDrive.setTargetPosition(tickNeeded);
+        FLDrive.setTargetPosition(-tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(-tickNeeded);
 
         //Changes what information we send to the motors.
         FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
