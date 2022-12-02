@@ -96,7 +96,7 @@ public class EmmyAuto1 extends LinearOpMode {
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
 
         sleep(500);
-        
+
         driveStraight(12,0.75);
         int i = 0;
         char color = pipeline.getColor();
@@ -328,6 +328,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
@@ -394,6 +395,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
@@ -410,10 +412,10 @@ public class EmmyAuto1 extends LinearOpMode {
         int BrPosition;
 
         //How many ticks the motor needs to move
-        FLDrive.setTargetPosition(tickNeeded);
-        FRDrive.setTargetPosition(-tickNeeded);
-        BLDrive.setTargetPosition(-tickNeeded);
-        BRDrive.setTargetPosition(tickNeeded);
+        FLDrive.setTargetPosition(-tickNeeded);
+        FRDrive.setTargetPosition(tickNeeded);
+        BLDrive.setTargetPosition(tickNeeded);
+        BRDrive.setTargetPosition(-tickNeeded);
 
         //Changes what information we send to the motors.
         FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -460,6 +462,7 @@ public class EmmyAuto1 extends LinearOpMode {
         final double ticksPerInch = TICKS_PER_INCH * 1;
 
         // correct for weight imbalances
+        // note that the directions are not set yet
         final double directionBias = 0;
 
         //Reset encoder positions
@@ -476,10 +479,10 @@ public class EmmyAuto1 extends LinearOpMode {
         int BrPosition;
 
         //How many ticks the motor needs to move
-        FLDrive.setTargetPosition(-tickNeeded);
-        FRDrive.setTargetPosition(tickNeeded);
-        BLDrive.setTargetPosition(tickNeeded);
-        BRDrive.setTargetPosition(-tickNeeded);
+        FLDrive.setTargetPosition(tickNeeded);
+        FRDrive.setTargetPosition(-tickNeeded);
+        BLDrive.setTargetPosition(-tickNeeded);
+        BRDrive.setTargetPosition(tickNeeded);
 
         //Changes what information we send to the motors.
         FLDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
