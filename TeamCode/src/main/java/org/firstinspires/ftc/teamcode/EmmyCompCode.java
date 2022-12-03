@@ -9,12 +9,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 @TeleOp (name = "CompCode", group = "Iterative Opmode")
 public class EmmyCompCode extends OpMode {
 
     //Declare OpMode members
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor BLDrive = null;
     private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
@@ -120,7 +119,6 @@ public class EmmyCompCode extends OpMode {
 
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
 
         boolean up = (gamepad2.left_trigger > 0);
         boolean down = (gamepad2.right_trigger > 0);
