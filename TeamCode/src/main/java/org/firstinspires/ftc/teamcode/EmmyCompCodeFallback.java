@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp (name = "CompCode", group = "Iterative Opmode")
+@TeleOp (name = "CompCodeFallback", group = "Iterative Opmode")
 public class EmmyCompCodeFallback extends OpMode {
 
     //Declare OpMode members

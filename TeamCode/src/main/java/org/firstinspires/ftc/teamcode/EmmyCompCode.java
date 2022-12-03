@@ -20,8 +20,8 @@ public class EmmyCompCode extends OpMode {
     private DcMotor FLDrive = null;
     private DcMotor BRDrive = null;
 //    private BNO055IMU imu = null;
-//    private DcMotor VertLift = null;
-//    private CRServo OpenClaw = null;
+    private DcMotor VertLift = null;
+    private CRServo OpenClaw = null;
 //    private CRServo LiftUp = null;
     final double motorMultiplier = 0.65;
 
@@ -35,18 +35,18 @@ public class EmmyCompCode extends OpMode {
         FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
         FLDrive  = hardwareMap.get(DcMotor.class, "FLDrive");
         BRDrive  = hardwareMap.get(DcMotor.class, "BRDrive");
-//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
 
-//        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
+        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
 //        LiftUp = hardwareMap.get(CRServo.class, "LiftUp");
 
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-//        VertLift.setDirection(DcMotor.Direction.FORWARD);
+        VertLift.setDirection(DcMotor.Direction.FORWARD);
 
-//        OpenClaw.setDirection(CRServo.Direction.FORWARD);
+        OpenClaw.setDirection(CRServo.Direction.FORWARD);
 //        LiftUp.setDirection(CRServo.Direction.FORWARD);
 
 
@@ -78,20 +78,20 @@ public class EmmyCompCode extends OpMode {
 
         // get servos
 
-//        boolean servoClose = gamepad2.dpad_left;
-//        boolean servoOpen = gamepad2.dpad_right;
+        boolean servoClose = gamepad2.dpad_left;
+        boolean servoOpen = gamepad2.dpad_right;
 //
 //        boolean tiltUp = gamepad2.dpad_up;
 //        boolean tiltDown = gamepad2.dpad_down;
 
 
-//        if (servoOpen) {
-//            OpenClaw.setPower(0.5);
-//        } else if (servoClose) {
-//            OpenClaw.setPower(-0.5);
-//        } else {
-//            OpenClaw.setPower(0.85);
-//        }
+        if (servoOpen) {
+            OpenClaw.setPower(0.5);
+        } else if (servoClose) {
+            OpenClaw.setPower(-0.5);
+        } else {
+            OpenClaw.setPower(0);
+        }
 //
 //        if (tiltUp) {
 //            LiftUp.setPower(0.5);
@@ -119,8 +119,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-        boolean up = (gamepad1.right_trigger > 0);
-        boolean down = (gamepad1.left_trigger > 0);
+        boolean up = (gamepad2.right_trigger > 0);
+        boolean down = (gamepad2.left_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
@@ -128,40 +128,47 @@ public class EmmyCompCode extends OpMode {
         double backLeftPower;
         double frontRightPower;
         double backRightPower;
-        if (up) {
-            frontLeftPower = -0.8;
-            backLeftPower = 0.8;
-            frontRightPower = 0.8;
-            backRightPower = -0.8;
-        } else if (down) {
-            frontLeftPower = 0.8;
-            backLeftPower = -0.8;
-            frontRightPower = -0.8;
-            backRightPower = 0.8;
-        } else {
+//        if (up) {
+//            frontLeftPower = -0.8;
+//            backLeftPower = 0.8;
+//            frontRightPower = 0.8;
+//            backRightPower = -0.8;
+//        } else if (down) {
+//            frontLeftPower = 0.8;
+//            backLeftPower = -0.8;
+//            frontRightPower = -0.8;
+//            backRightPower = 0.8;
+//        } else {
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             frontLeftPower = (y + x - rx) / denominator;
             backLeftPower = (y - x - rx) / denominator;
             frontRightPower = (y - x + rx) / denominator;
             backRightPower = (y + x + rx) / denominator;
-        }
+//        }
 
         FLDrive.setPower(frontLeftPower*motorMultiplier);
         FRDrive.setPower(frontRightPower*motorMultiplier);
         BLDrive.setPower(backLeftPower*motorMultiplier);
         BRDrive.setPower(backRightPower*motorMultiplier);
 
-//        if (down && !up) {
-//            VertLift.setPower(0.65);
-//        } else if (!down && up){
-//            VertLift.setPower(-0.65);
-//        }else{
-//            VertLift.setPower(0);
-//        }
+        if (down && !up) {
+            VertLift.setPower(VertLift.getPower() - 0.4);
+            telemetry.addData("Lift Status: ", "Down");
+        } else if (!down && up){
+            VertLift.setPower(VertLift.getPower() + 0.4);
+            telemetry.addData("Lift Status: ", "Up");
+        }else{
+            VertLift.setPower(0);
+            telemetry.addData("Lift Status: ", "Stop");
+        }
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-        // telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
+        telemetry.addData("FLDrive: ", ""+frontLeftPower*motorMultiplier);
+        telemetry.addData("FRDrive: ", ""+frontRightPower*motorMultiplier);
+        telemetry.addData("BLDrive: ", ""+backLeftPower*motorMultiplier);
+        telemetry.addData("BRDrive: ", ""+backRightPower*motorMultiplier);
+//         telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
         telemetry.update();
     }
 
@@ -172,9 +179,9 @@ public class EmmyCompCode extends OpMode {
         FRDrive.setPower(0);
         BLDrive.setPower(0);
         BRDrive.setPower(0);
-//        VertLift.setPower(0);
+        VertLift.setPower(0);
 //        LiftUp.setPower(0);
-//        OpenClaw.setPower(0);
+        OpenClaw.setPower(0);
         telemetry.addData("Status", "STOPPED");
     }
 }

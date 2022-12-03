@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import java.util.Arrays;
 
-@Autonomous(name = "Auto 1")
+@Autonomous(name = "Auto Color")
 //@Disabled
 public class EmmyAutoColor extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
@@ -94,7 +94,7 @@ public class EmmyAutoColor extends LinearOpMode {
 
         sleep(500);
 
-        driveStraight(8.5,0.75);
+        driveStraight(12,0.75);
         int i = 0;
         char color = pipeline.getColor();
         while (i < 5000){
