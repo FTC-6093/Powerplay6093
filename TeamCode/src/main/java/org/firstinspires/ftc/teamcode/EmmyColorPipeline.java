@@ -1,4 +1,6 @@
 package org.firstinspires.ftc.teamcode;
+import android.provider.ContactsContract;
+
 import androidx.annotation.NonNull;
 
 import org.opencv.core.Mat;
@@ -9,7 +11,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 
 public class EmmyColorPipeline extends OpenCvPipeline {
-    Mat inputMask = new Mat();
+    Mat rgb = new Mat();
+    Mat hsvMask = new Mat();
     Size boxSize = new Size(5, 5);
     Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
     org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
@@ -34,7 +37,9 @@ public class EmmyColorPipeline extends OpenCvPipeline {
 
     private static char checkForHSV(double h, double error) {
 //        assert h <= 60;
+
         double horiz_rot = (h-60) % 360;
+        if (horiz_rot < 0) {horiz_rot += 360;} //AAAAAAAAAAAAAAAAAAA
 
         //red = 300
         if (300-error < horiz_rot && horiz_rot < 300+error) {
@@ -55,13 +60,16 @@ public class EmmyColorPipeline extends OpenCvPipeline {
 
     @Override
     public void init(Mat input) {
+
     }
 
     @Override
     public Mat processFrame(@NonNull Mat input) {
         //screen is 720 by 1280
-        input.copyTo(inputMask);
-        Imgproc.cvtColor(inputMask,inputMask,Imgproc.COLOR_RGB2HSV);
+//        input.copyTo(inputMask);
+        Imgproc.cvtColor(input,rgb,Imgproc.COLOR_RGBA2RGB);
+        Imgproc.cvtColor(rgb,hsvMask,Imgproc.COLOR_RGB2HSV);
+
 //            Imgproc.Canny(input, inputMask, 250, 800);
 //            Imgproc.blur(inputMask, inputMask, boxSize);
 //            //assuming Mat.size() gets mat size
@@ -74,21 +82,24 @@ public class EmmyColorPipeline extends OpenCvPipeline {
 
 //            input.mul(inputMask);
 
-        return input;
+        return hsvMask;
     }
 
     public char getColor() {
-        double[] hsv = inputMask.get(360, 640);
-        if (hsv != null) {
-            if (hsv.length == 4 || hsv.length == 3) {
-                double h = hsv[0];
-                return checkForHSV(h, 60);
+        double[] rgb = hsvMask.get(360, 640);
+        if (rgb != null) {
+            if (rgb.length == 4 || rgb.length == 3) {
+                double r = rgb[0];
+//                double g = rgb[1];
+//                double b = rgb[2];
+//                return checkForRGB(r,g,b,60);
+                return checkForHSV(r*2, 60);
             }
         }
         return 'a';
     }
 
     public double[] getMiddlePixel() {
-        return inputMask.get(640, 360);
+        return hsvMask.get(640, 360);
     }
 }

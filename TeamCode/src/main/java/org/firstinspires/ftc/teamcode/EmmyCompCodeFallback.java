@@ -3,26 +3,24 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
 @TeleOp (name = "CompCode", group = "Iterative Opmode")
-public class EmmyCompCode extends OpMode {
+public class EmmyCompCodeFallback extends OpMode {
 
     //Declare OpMode members
-    private final ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor BLDrive = null;
     private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
     private DcMotor BRDrive = null;
 //    private BNO055IMU imu = null;
-    private DcMotor VertLift = null;
-    private CRServo OpenClaw = null;
-    private CRServo LiftUp = null;
-    final double motorMultiplier = 0.85;
+//    private DcMotor VertLift = null;
+//    private CRServo OpenClaw = null;
+//    private CRServo LiftUp = null;
+    final double motorMultiplier = 0.65;
 
 
     @Override
@@ -34,18 +32,19 @@ public class EmmyCompCode extends OpMode {
         FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
         FLDrive  = hardwareMap.get(DcMotor.class, "FLDrive");
         BRDrive  = hardwareMap.get(DcMotor.class, "BRDrive");
-        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
-        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
-        LiftUp = hardwareMap.get(CRServo.class, "LiftUp");
+//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+
+//        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
+//        LiftUp = hardwareMap.get(CRServo.class, "LiftUp");
 
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-        VertLift.setDirection(DcMotor.Direction.FORWARD);
+//        VertLift.setDirection(DcMotor.Direction.FORWARD);
 
-        OpenClaw.setDirection(CRServo.Direction.FORWARD);
-        LiftUp.setDirection(CRServo.Direction.FORWARD);
+//        OpenClaw.setDirection(CRServo.Direction.FORWARD);
+//        LiftUp.setDirection(CRServo.Direction.FORWARD);
 
 
         // Retrieve the IMU from the hardware map
@@ -74,31 +73,30 @@ public class EmmyCompCode extends OpMode {
     @Override
     public void loop() { //Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
 
+        // get servos
 
-        boolean holdT = false;
-        boolean OnPress = gamepad1.back;
-
-        boolean servoClose = gamepad2.dpad_left;
-        boolean servoOpen = gamepad2.dpad_right;
-        boolean tiltUp = gamepad2.dpad_up;
-        boolean tiltDown = gamepad2.dpad_down;
+//        boolean servoClose = gamepad2.dpad_left;
+//        boolean servoOpen = gamepad2.dpad_right;
+//
+//        boolean tiltUp = gamepad2.dpad_up;
+//        boolean tiltDown = gamepad2.dpad_down;
 
 
-        if (servoOpen) {
-            OpenClaw.setPower(OpenClaw.getPower() + 0.1);
-        } else if (servoClose) {
-            OpenClaw.setPower(OpenClaw.getPower() - 0.1);
-        } else {
-            OpenClaw.setPower(0);
-        }
-
-        if (tiltUp) {
-            LiftUp.setPower(0.5);
-        } else if (tiltDown) {
-            LiftUp.setPower(-0.5);
-        } else {
-            LiftUp.setPower(0);
-        }
+//        if (servoOpen) {
+//            OpenClaw.setPower(0.5);
+//        } else if (servoClose) {
+//            OpenClaw.setPower(-0.5);
+//        } else {
+//            OpenClaw.setPower(0.85);
+//        }
+//
+//        if (tiltUp) {
+//            LiftUp.setPower(0.5);
+//        } else if (tiltDown) {
+//            LiftUp.setPower(-0.5);
+//        } else {
+//            LiftUp.setPower(0);
+//        }
 
         // Retrieve lift values from controller
 
@@ -117,8 +115,9 @@ public class EmmyCompCode extends OpMode {
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
-        boolean up = (gamepad2.left_trigger > 0);
-        boolean down = (gamepad2.right_trigger > 0);
+
+        boolean up = (gamepad1.right_trigger > 0);
+        boolean down = (gamepad1.left_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
@@ -126,45 +125,39 @@ public class EmmyCompCode extends OpMode {
         double backLeftPower;
         double frontRightPower;
         double backRightPower;
-//        if (up) {
-//            frontLeftPower = -0.8;
-//            backLeftPower = 0.8;
-//            frontRightPower = 0.8;
-//            backRightPower = -0.8;
-//        } else if (down) {
-//            frontLeftPower = 0.8;
-//            backLeftPower = -0.8;
-//            frontRightPower = -0.8;
-//            backRightPower = 0.8;
-
+        if (up) {
+            frontLeftPower = -0.8;
+            backLeftPower = 0.8;
+            frontRightPower = 0.8;
+            backRightPower = -0.8;
+        } else if (down) {
+            frontLeftPower = 0.8;
+            backLeftPower = -0.8;
+            frontRightPower = -0.8;
+            backRightPower = 0.8;
+        } else {
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             frontLeftPower = (y + x - rx) / denominator;
             backLeftPower = (y - x - rx) / denominator;
             frontRightPower = (y - x + rx) / denominator;
             backRightPower = (y + x + rx) / denominator;
-
+        }
 
         FLDrive.setPower(frontLeftPower*motorMultiplier);
         FRDrive.setPower(frontRightPower*motorMultiplier);
         BLDrive.setPower(backLeftPower*motorMultiplier);
         BRDrive.setPower(backRightPower*motorMultiplier);
 
-        if (down && !up) {
-            VertLift.setPower(VertLift.getPower() - 0.4);
-            telemetry.addData("Lift Status: ", down);
-            telemetry.update();
-        } else if (!down && up){
-            VertLift.setPower(VertLift.getPower() + 0.4);
-            telemetry.addData("Lift Status: ",up);
-            telemetry.update();
-        }else{
-            VertLift.setPower(0);
-            telemetry.addData("Lift Status: ", up);
-            telemetry.update();
-        }
+//        if (down && !up) {
+//            VertLift.setPower(0.65);
+//        } else if (!down && up){
+//            VertLift.setPower(-0.65);
+//        }else{
+//            VertLift.setPower(0);
+//        }
 
         // Show the elapsed game time and wheel power.
-//        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
         // telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
         telemetry.update();
     }
@@ -176,9 +169,9 @@ public class EmmyCompCode extends OpMode {
         FRDrive.setPower(0);
         BLDrive.setPower(0);
         BRDrive.setPower(0);
-        VertLift.setPower(0);
-        LiftUp.setPower(0);
-        OpenClaw.setPower(0);
+//        VertLift.setPower(0);
+//        LiftUp.setPower(0);
+//        OpenClaw.setPower(0);
         telemetry.addData("Status", "STOPPED");
     }
 }

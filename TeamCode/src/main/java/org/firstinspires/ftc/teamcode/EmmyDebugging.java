@@ -64,8 +64,8 @@ public class EmmyDebugging extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        addTelemetry("Status: ", "Initializing Motors");
-        updateTelemetry();
+        telemetry.addData("Status: ", "Initializing Motors");
+        telemetry.update();
 
         FLDrive = hardwareMap.get(DcMotor.class, "FLDrive");
         FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
@@ -84,8 +84,8 @@ public class EmmyDebugging extends LinearOpMode {
         BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        addTelemetry("Status: ", "Initializing Webcam");
-        updateTelemetry();
+        telemetry.addData("Status: ", "Initializing Webcam");
+        telemetry.update();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -100,8 +100,8 @@ public class EmmyDebugging extends LinearOpMode {
         });
         webcam.setPipeline(pipeline); //Actually set the pipeline??? lez go
 
-        addTelemetry("Status: ", "Initialized");
-        updateTelemetry();
+        telemetry.addData("Status: ", "Initialized");
+        telemetry.update();
 
         waitForStart();
 
@@ -150,23 +150,23 @@ public class EmmyDebugging extends LinearOpMode {
     }
 
     private void waitForMotors() {
-        while (
+        do {
+            // telemetry
+            telemetry.addData("FLDrive: ", "" + FLDrive.getCurrentPosition());
+            telemetry.addData("FRDrive: ", "" + FRDrive.getCurrentPosition());
+            telemetry.addData("BLDrive: ", "" + BLDrive.getCurrentPosition());
+            telemetry.addData("BRDrive: ", "" + BRDrive.getCurrentPosition());
+
+            telemetry.addData("Color: ", "" + pipeline.getColor());
+            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
+
+            telemetry.update();
+        } while (
                 FLDrive.isBusy() ||
                 FRDrive.isBusy() ||
                 BLDrive.isBusy() ||
                 BRDrive.isBusy()
-        ) {
-            // telemetry
-            addTelemetry("FLDrive: ", "" + FLDrive.getCurrentPosition());
-            addTelemetry("FRDrive: ", "" + FRDrive.getCurrentPosition());
-            addTelemetry("BLDrive: ", "" + BLDrive.getCurrentPosition());
-            addTelemetry("BRDrive: ", "" + BRDrive.getCurrentPosition());
-
-            addTelemetry("Color: ", "" + pipeline.getColor());
-            addTelemetry("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
-
-            updateTelemetry();
-        }
+        );
     }
 
     private void driveStraight(int inches, double power) {
