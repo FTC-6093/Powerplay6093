@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Arrays;
 
-@Autonomous(name = "Auto 1")
+@Autonomous(name = "Auto Green")
 //@Disabled
 public class EmmyAutoGreen extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)

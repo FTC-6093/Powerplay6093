@@ -12,11 +12,7 @@ def compose(*args): #compose a bunch of one arg functions
     else:
         return lambda x: args[-1](compose(*args[:-1])(x))
 
-color_pipeline = compose(
-        img.pil_to_cv,
-        lambda x: cv.Canny(x, 250, 800),
-        lambda x: cv.blur(x, (5,5)),
-    )
+color_pipeline = compose(img.pil_to_cv, lambda x: cv.Canny(x, 250, 800), lambda x: cv.blur(x, (5,5)))
     
 cvpiped = [color_pipeline(x) for x in img.images]
 

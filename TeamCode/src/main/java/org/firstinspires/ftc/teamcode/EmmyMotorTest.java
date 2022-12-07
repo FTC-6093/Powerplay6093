@@ -153,7 +153,7 @@ public class EmmyMotorTest extends OpMode {
         }
 
         telemetry.addData("Pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
-        telemetry.addData("Color: ", ""+pipeline.getColor());
+        telemetry.addData("Color: ", ""+pipeline.getSample());
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
