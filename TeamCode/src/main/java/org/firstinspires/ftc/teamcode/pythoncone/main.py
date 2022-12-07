@@ -66,12 +66,12 @@ elif color == 1:
 
     cvpiped = [shape_pipeline(x) for x in img.images]
 
-    cvcontours = [img.findPoly(x) for x in cvpiped]
+    # cvcontours = [img.findPoly(x) for x in cvpiped]
     
-    cvpiped = [np.dstack([x,x,x]) for x in cvpiped]
+    # cvpiped = [np.dstack([x,x,x]) for x in cvpiped]
     
-    for i, im in enumerate(cvpiped):
-        cv.drawContours(im, [cvcontours[i]], 0, (0,255,0), 3)
+    # for i, im in enumerate(cvpiped):
+    #     cv.drawContours(im, [cvcontours[i]], 0, (0,255,0), 3)
 elif color == 2:
     color_profile_pipeline = compose(
         img.pil_to_cv,
@@ -97,4 +97,5 @@ print(time.time_ns()-t)
 
 while 1:
     for i in range(3):
-        img.showimage(win, cvmask[i], 2)
+        cv.imshow('image',cvpiped[i])
+        cv.waitKey(0)
