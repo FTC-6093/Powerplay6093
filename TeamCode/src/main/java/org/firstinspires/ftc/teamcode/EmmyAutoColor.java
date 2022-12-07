@@ -22,7 +22,7 @@ import java.util.Arrays;
 //@Disabled
 public class EmmyAutoColor extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor FLDrive = null;
     private DcMotor FRDrive = null;
     private DcMotor BLDrive = null;
@@ -92,25 +92,26 @@ public class EmmyAutoColor extends LinearOpMode {
         //pipeline.getColor() will return
         //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
 
-        sleep(500);
 
-        driveStraight(12,0.75);
+
+        //claw is 3.5 inches
+        sleep(5000);
         int i = 0;
-        char color = pipeline.getColor();
         while (i < 5000){
+            char color = pipeline.getSample();
             i++;
             switch (color) {
                 case 'r':
-                    driveStraight(12, 0.75);
+                    driveStraight(27.5, 0.75);
                     strafeLeft(24, 0.75);
                     i = 5001;
                     break;
                 case 'g':
-                    driveStraight(12, 0.75);
+                    driveStraight(27.5, 0.75);
                     i = 5001;
                     break;
                 case 'b':
-                    driveStraight(12, 0.75);
+                    driveStraight(27.5, 0.75);
                     strafeRight(24, 0.75);
                     i = 5001;
                     break;
@@ -131,10 +132,9 @@ public class EmmyAutoColor extends LinearOpMode {
 //                    telemetry.update();
 //                    break;
             }
-            color = pipeline.getColor();
         }
 
-        telemetry.addData("Color: ", ""+color);
+        telemetry.addData("Color: ", ""+pipeline.getSample());
         telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
         telemetry.update();
 
@@ -371,6 +371,8 @@ public class EmmyAutoColor extends LinearOpMode {
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
              telemetry.addData("Ticks Needed", ""+tickNeeded);
+             telemetry.addData("Color: ", ""+pipeline.getSample());
+            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
             telemetry.addData("Success!", null);
 
             telemetry.update();
@@ -438,6 +440,8 @@ public class EmmyAutoColor extends LinearOpMode {
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
             telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Color: ", ""+pipeline.getSample());
+            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
             telemetry.addData("Success!", null);
 
             telemetry.update();
@@ -505,6 +509,8 @@ public class EmmyAutoColor extends LinearOpMode {
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
             telemetry.addData("Ticks Needed", ""+tickNeeded);
+            telemetry.addData("Color: ", ""+pipeline.getSample());
+            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
             telemetry.addData("Success!", null);
 
             telemetry.update();

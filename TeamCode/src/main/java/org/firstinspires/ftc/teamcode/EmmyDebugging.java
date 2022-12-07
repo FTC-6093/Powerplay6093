@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -157,7 +159,7 @@ public class EmmyDebugging extends LinearOpMode {
             telemetry.addData("BLDrive: ", "" + BLDrive.getCurrentPosition());
             telemetry.addData("BRDrive: ", "" + BRDrive.getCurrentPosition());
 
-            telemetry.addData("Color: ", "" + pipeline.getColor());
+            telemetry.addData("Color: ", "" + pipeline.getSample());
             telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
 
             telemetry.update();
@@ -167,7 +169,9 @@ public class EmmyDebugging extends LinearOpMode {
                 BLDrive.isBusy() ||
                 BRDrive.isBusy()
         );
+
     }
+
 
     private void driveStraight(int inches, double power) {
         int targetEncoderPosition = (int) TICKS_PER_INCH * inches;

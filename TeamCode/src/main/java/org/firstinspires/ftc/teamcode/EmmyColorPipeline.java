@@ -1,13 +1,18 @@
 package org.firstinspires.ftc.teamcode;
+import static java.lang.Thread.sleep;
+
 import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
+
+import java.util.ArrayList;
 
 
 public class EmmyColorPipeline extends OpenCvPipeline {
@@ -38,19 +43,19 @@ public class EmmyColorPipeline extends OpenCvPipeline {
     private static char checkForHSV(double h, double error) {
 //        assert h <= 60;
 
-        double horiz_rot = (h-60) % 360;
+        double horiz_rot = (h-error) % 360;
         if (horiz_rot < 0) {horiz_rot += 360;} //AAAAAAAAAAAAAAAAAAA
 
         //red = 300
-        if (300-error < horiz_rot && horiz_rot < 300+error) {
+        if (240 < horiz_rot && horiz_rot < 360) {
             return 'r';
         }
         //green = 60
-        if (60-error < horiz_rot && horiz_rot < 60+error) {
+        if (0 < horiz_rot && horiz_rot < 120) {
             return 'g';
         }
         //blue = 180
-        if (180-error < horiz_rot && horiz_rot < 180+error) {
+        if (120 < horiz_rot && horiz_rot < 240) {
             return 'b';
         }
 
@@ -82,21 +87,32 @@ public class EmmyColorPipeline extends OpenCvPipeline {
 
 //            input.mul(inputMask);
 
-        return hsvMask;
+
+
+        return input;
     }
 
-    public char getColor() {
-        double[] rgb = hsvMask.get(360, 640);
-        if (rgb != null) {
-            if (rgb.length == 4 || rgb.length == 3) {
-                double r = rgb[0];
-//                double g = rgb[1];
-//                double b = rgb[2];
+    public char getColor(double[] clr) {
+        double[] hsv = hsvMask.get(360, 640);
+        if (hsv != null) {
+            if (hsv.length == 4 || hsv.length == 3 || hsv.length == 1) {
+                double r = hsv[0];
+//                double g = hsv[1];
+//                double b = hsv[2];
 //                return checkForRGB(r,g,b,60);
                 return checkForHSV(r*2, 60);
             }
         }
         return 'a';
+    }
+
+    public char getSample() {
+        double hues = 0;
+        for (int i = 0; i < 100; i++) {
+            hues += getMiddlePixel()[0];
+        }
+
+        return getColor(new double[]{hues/100});
     }
 
     public double[] getMiddlePixel() {

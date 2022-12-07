@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -14,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class EmmyCompCode extends OpMode {
 
     //Declare OpMode members
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor BLDrive = null;
     private DcMotor FRDrive = null;
     private DcMotor FLDrive = null;
@@ -23,7 +21,7 @@ public class EmmyCompCode extends OpMode {
     private DcMotor VertLift = null;
     private CRServo OpenClaw = null;
 //    private CRServo LiftUp = null;
-    final double motorMultiplier = 0.65;
+    final double motorMultiplier = 0.79;
 
 
     @Override
@@ -58,9 +56,6 @@ public class EmmyCompCode extends OpMode {
         // Without this, data retrieving from the IMU throws an exception
         imu.initialize(parameters);
 
-
-        double pastMotorPower = 0;
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -78,11 +73,11 @@ public class EmmyCompCode extends OpMode {
 
         // get servos
 
-        boolean servoClose = gamepad2.dpad_left;
-        boolean servoOpen = gamepad2.dpad_right;
+        boolean servoClose = gamepad1.dpad_left;
+        boolean servoOpen = gamepad1.dpad_right;
 //
-//        boolean tiltUp = gamepad2.dpad_up;
-//        boolean tiltDown = gamepad2.dpad_down;
+//        boolean tiltUp = gamepad1.dpad_up;
+//        boolean tiltDown = gamepad1.dpad_down;
 
 
         if (servoOpen) {
@@ -119,8 +114,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
 
-        boolean up = (gamepad2.right_trigger > 0);
-        boolean down = (gamepad2.left_trigger > 0);
+        boolean up = (gamepad1.right_trigger > 0);
+        boolean down = (gamepad1.left_trigger > 0);
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when at least one is out
         // of the range [-1, 1]
@@ -163,7 +158,7 @@ public class EmmyCompCode extends OpMode {
         }
 
         // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Status", "Run Time: " + runtime);
         telemetry.addData("FLDrive: ", ""+frontLeftPower*motorMultiplier);
         telemetry.addData("FRDrive: ", ""+frontRightPower*motorMultiplier);
         telemetry.addData("BLDrive: ", ""+backLeftPower*motorMultiplier);
