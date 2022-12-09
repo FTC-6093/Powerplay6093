@@ -47,6 +47,8 @@ public class EmmyCompCode extends OpMode {
         OpenClaw.setDirection(CRServo.Direction.FORWARD);
         LiftUp.setDirection(CRServo.Direction.FORWARD);
 
+        VertLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // Retrieve the IMU from the hardware map
         BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
