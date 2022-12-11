@@ -77,10 +77,10 @@ public class EmmyCompCode extends OpMode {
 
 
 
-        boolean servoClose = gamepad2.dpad_left;
-        boolean servoOpen = gamepad2.dpad_right;
-        boolean tiltUp = gamepad2.dpad_up;
-        boolean tiltDown = gamepad2.dpad_down;
+        boolean servoClose = gamepad1.left_bumper;
+        boolean servoOpen = gamepad1.right_bumper;
+        boolean tiltUp = gamepad1.dpad_up;
+        boolean tiltDown = gamepad1.dpad_down;
 
 
         if (servoOpen) {
@@ -116,8 +116,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
-        double up = (gamepad2.left_trigger);
-        double down = (gamepad2.right_trigger);
+        double up = (gamepad1.left_trigger);
+        double down = (gamepad1.right_trigger);
         double uplimit = .3;
         double downlimit = .3;
         // Denominator is the largest motor power (absolute value) or 1
