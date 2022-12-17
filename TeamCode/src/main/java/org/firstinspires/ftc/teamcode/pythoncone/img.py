@@ -10,8 +10,8 @@ import time
 
 # Import cone images
 images = [
-    Image.open(f"Images/Color/Downscaled/{x}_downscaled_cone.jpg")
-    for x in ("red", "blue", "green")
+    Image.open(f"Images/Shapes/Downscaled/{x}_downscaled_cone.jpg")
+    for x in ("triangle", "square", "pentagon")
 ]
 
 
