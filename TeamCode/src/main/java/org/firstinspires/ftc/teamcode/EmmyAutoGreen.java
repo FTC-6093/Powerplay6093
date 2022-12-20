@@ -26,7 +26,7 @@ public class EmmyAutoGreen extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     final double WHEEL_DIAMETER = 3.875;
-    final double TICKS_PER_ROTATION = 1120;
+    final double TICKS_PER_ROTATION = 1120 / 2;
     final double PIE = 3.14159;
     final double TICKS_PER_INCH = TICKS_PER_ROTATION/(WHEEL_DIAMETER * PIE);
 
@@ -60,8 +60,8 @@ public class EmmyAutoGreen extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         runtime.reset();
 
-        driveStraight(8.5, 0.75);
-        driveStraight(12, 0.75);
+        driveStraight(8.5, 0.75/2);
+        driveStraight(12, 0.75/2);
 
 
         //Jaren, run code here
@@ -336,7 +336,7 @@ public class EmmyAutoGreen extends LinearOpMode {
         BRDrive.setPower(power+directionBias);
 
 
-        while (this.opModeIsActive() && (FLDrive.isBusy() || FRDrive.isBusy() || BLDrive.isBusy() || BRDrive.isBusy())) {
+        while (this.opModeIsActive() && (FRDrive.isBusy() || BLDrive.isBusy())) {
             FlPosition = FLDrive.getCurrentPosition();
             FrPosition = FRDrive.getCurrentPosition();
             BlPosition = BLDrive.getCurrentPosition();
