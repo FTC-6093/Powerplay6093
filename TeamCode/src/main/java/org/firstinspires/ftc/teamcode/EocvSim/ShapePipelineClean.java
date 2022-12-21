@@ -54,22 +54,14 @@ public class ShapePipelineClean extends OpenCvPipeline {
         this.telemetry = telemetry;
     }
 
-    Mat hsv = new Mat();
-
-    ArrayList<Mat> template = new ArrayList<Mat>(){{
+    ArrayList<Mat> hsvSplit = new ArrayList<Mat>(){{
         add(new Mat());
         add(new Mat());
         add(new Mat());
     }};
-
-    ArrayList<Mat> hsvsplit = new ArrayList<Mat>(){{
-        add(new Mat());
-        add(new Mat());
-        add(new Mat());
-    }};
-
 
 //    Flipping back and forth between 2 mat arrays to save memory
+//    alternate procA, procB as src & dst
     Mat procA = new Mat();
     Mat procB = new Mat();
 
@@ -80,18 +72,16 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //    blur kernel size
     Size blur = new Size(3,3);
 
-//    throwaway mat for unneeded values
+//    throwaway mat for unneeded values, used for hierarchy
     Mat trash = new Mat();
 
-    Mat filled = new Mat();
+//    point arrays for edge detection
     MatOfPoint2f poly = new MatOfPoint2f();
-    MatOfPoint2f thing = new MatOfPoint2f();
-
+    MatOfPoint2f highDefPoly = new MatOfPoint2f();
     ArrayList<MatOfPoint> edges;
 
     int framesProcessed = 0;
-
-    int shape = 4;
+    int shape = 0;
 
 //    filling in OpenCV is actually really inconvenient
     Scalar fill = new Scalar(255);
@@ -119,10 +109,10 @@ public class ShapePipelineClean extends OpenCvPipeline {
 
 //        convert input to hsv then split on channels
         Imgproc.cvtColor(input,procA,Imgproc.COLOR_RGB2HSV);
-        Core.split(procA,hsvsplit);
+        Core.split(procA, hsvSplit);
 
 //        using V of hsV, canny, then blur
-        Imgproc.Canny(hsvsplit.get(2), procA, 200, 200);
+        Imgproc.Canny(hsvSplit.get(2), procA, 200, 200);
         Imgproc.blur(procA, procB, blur);
 
 //        fill from middle pixel
@@ -182,8 +172,8 @@ public class ShapePipelineClean extends OpenCvPipeline {
         edges = new ArrayList<>();
         Imgproc.findContours(procA, edges, trash, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
         if (edges.size() == 0) {return 0;}
-        thing.fromArray(edges.get(0).toArray());
-        Imgproc.approxPolyDP(thing, poly, 10, true);
+        highDefPoly.fromArray(edges.get(0).toArray());
+        Imgproc.approxPolyDP(highDefPoly, poly, 10, true);
         telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
         return poly.toArray().length;
     }
