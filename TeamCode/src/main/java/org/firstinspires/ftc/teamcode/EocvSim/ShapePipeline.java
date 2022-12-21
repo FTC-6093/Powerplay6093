@@ -22,6 +22,13 @@ public class ShapePipeline extends OpenCvPipeline {
     }
 
     Mat hsv = new Mat();
+
+    ArrayList<Mat> template = new ArrayList<Mat>(){{
+        add(new Mat());
+        add(new Mat());
+        add(new Mat());
+    }};
+
     ArrayList<Mat> hsvsplit = new ArrayList<Mat>(){{
         add(new Mat());
         add(new Mat());
@@ -30,21 +37,24 @@ public class ShapePipeline extends OpenCvPipeline {
     Mat b = new Mat();
     Point middle = new Point(360,480);
     Point seed = middle.clone();
-    Size blur = new Size(5,5);
+    Size blur = new Size(3,3);
     Scalar fill = new Scalar(255);
     //    Mat out = new Mat();
     Mat flat = new Mat();
-    ArrayList<MatOfPoint> edges = new ArrayList<>();
     Mat filled = new Mat();
     MatOfPoint2f poly = new MatOfPoint2f();
     MatOfPoint2f thing = new MatOfPoint2f();
     Mat mask = new Mat();
     Mat oldBlur = new Mat();
 
+    ArrayList<MatOfPoint> edges;
+
     int framesProcessed = 0;
 
     int shape = 4;
 
+    Scalar red = new Scalar(255,0,0);
+    Scalar green = new Scalar(0,255,0);
 
     @Override
     public void init(Mat input) {
@@ -102,13 +112,16 @@ public class ShapePipeline extends OpenCvPipeline {
         return new Point(average_double(xcoords), average_double(ycoords));
     }
 
+
+
     @Override
     public Mat processFrame(Mat input) {
         // Executed every time a new frame is dispatched
+        hsv = new Mat();
         Imgproc.cvtColor(input,hsv,Imgproc.COLOR_RGB2HSV);
-        org.opencv.core.Core.split(hsv,hsvsplit);
+        Core.split(hsv,hsvsplit);
 
-        Imgproc.Canny(hsvsplit.get(2), b, 200, 225);
+        Imgproc.Canny(hsvsplit.get(2), b, 200, 200);
         Imgproc.blur(b, hsv, blur);
 //        if (oldBlur.empty()) {
 //            oldBlur = hsv;
@@ -117,47 +130,98 @@ public class ShapePipeline extends OpenCvPipeline {
 //        oldBlur.convertTo(hsv, CvType.CV_32F);
 //        b = Core.mean(hsv,oldBlur);
 //        oldBlur = hsv;
-        b = hsv;
-//        filled = hsv.clone();
-//        int h = input.height();
-//        int w = input.width();
-//        middle.x = (double) w/2;
-//        middle.y = (double) h/2;
-//        fill_from_pixel(hsv, middle, b);
+//        b = hsv;
+//        b = hsvsplit.get(2);
+        filled = hsv.clone();
+        int h = input.height();
+        int w = input.width();
+        middle.x = (double) w/2;
+        middle.y = (double) h/2;
+        fill_from_pixel(hsv, middle, b);
+
+        edges = new ArrayList<>();
+
+        Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+//        hsvsplit = template;
+
+        Core.split(b,template);
+
+        hsv = input;
 //
-//        Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        if (template.size() == 1) {
+//            hsv = b;
+            Imgproc.cvtColor(b,hsv,Imgproc.COLOR_GRAY2RGB);
+        } else if (template.size() == 4) {
+            Imgproc.cvtColor(b,hsv,Imgproc.COLOR_RGBA2RGB);
+        } else {
+            hsv = b;
+        }
+
+
+//        b = hsv;
 //
-//        ArrayList<Double> average_edges = new ArrayList<>();
-//        for (MatOfPoint edge:edges) {
-//            ArrayList<Double> edge_average_dist = new ArrayList<>();
-//            for (Point point :
-//                    edge.toArray()) {
-//                edge_average_dist.add(dist_to_center(point));
-//            }
-//            Double[] dblarraycast = new Double[edge_average_dist.size()];
-//            dblarraycast = edge_average_dist.toArray(dblarraycast);
-//            average_edges.add(average_double(dblarraycast));
+        ArrayList<Double> average_edges = new ArrayList<>();
+        for (MatOfPoint edge:edges) {
+            ArrayList<Double> edge_average_dist = new ArrayList<>();
+            for (Point point :
+                    edge.toArray()) {
+                edge_average_dist.add(dist_to_center(point));
+            }
+            Double[] dblarraycast = new Double[edge_average_dist.size()];
+            dblarraycast = edge_average_dist.toArray(dblarraycast);
+            average_edges.add(average_double(dblarraycast));
+        }
+        Double[] average_edge_array = new Double[average_edges.size()];
+
+//        final int[] int_average_edges = new int[average_edges.size()];
+//        int index = 0;
+//        for (final Double value: average_edges) {
+//            int_average_edges[(index++)] = value.intValue();
 //        }
-//        Double[] average_edge_array = new Double[average_edges.size()];
-//        seed = average_point(edges.get(index_of_min(average_edges.toArray(average_edge_array))).toArray());
-//        telemetry.addData("seed", seed.toString());
-//        fill_from_pixel(filled, seed, b);
-//        Imgproc.Canny(b, hsv, 250, 300);
-//        hsv.convertTo(b,CvType.CV_8U);
-////        Imgproc.blur(hsv,b,blur);
-//        telemetry.addData("shape", ""+getShape());
+
+
+//        telemetry.addData("dists", Arrays.toString(int_average_edges));
+
+        seed = average_point(edges.get(index_of_min(average_edges.toArray(average_edge_array))).toArray());
+        telemetry.addData("seed", (int) seed.x+", "+(int) seed.y);
+//        telemetry.addData("size", filled.size().toString());
+        fill_from_pixel(filled, seed, b);
+        Imgproc.Canny(b, hsv, 250, 300);
+
+//        hsv = b.clone();
+
+        Imgproc.cvtColor(hsv, b, Imgproc.COLOR_GRAY2RGB);
+
+        Imgproc.circle(b,middle,3,green);
+
+        Imgproc.drawContours(b,edges,-1,red);
+//        Imgproc.drawContours(b,edges,index_of_min(average_edges.toArray(average_edge_array)),red);
+
+
+//        Imgproc.cvtColor(hsv, b, Imgproc.COLOR_RGB2GRAY);
+
+//        filled = hsv.clone();
+        filled = b.clone();
+
+        hsv.convertTo(b,CvType.CV_8UC1);
+
+        Imgproc.blur(b,hsv,blur);
+        b = hsv.clone();
+        telemetry.addData("shape", ""+getShape());
         framesProcessed ++;
         telemetry.addData("x", ""+framesProcessed);
         telemetry.update();
-        return b;
+        return filled;
     }
 
     public int getShape() {
-
+        edges = new ArrayList<>();
         Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 //        telemetry.addData("edges: ", edges.toString());
+        if (edges.size() == 0) {return -1;}
         thing.fromArray(edges.get(0).toArray());
-        Imgproc.approxPolyDP(thing, poly, 60, true);
+        Imgproc.approxPolyDP(thing, poly, 10, true);
         telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
         shape = poly.toArray().length;
         telemetry.addData("shape", ""+shape);
