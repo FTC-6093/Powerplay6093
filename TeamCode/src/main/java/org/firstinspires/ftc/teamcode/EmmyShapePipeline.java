@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.EocvSim;
+package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -15,51 +14,44 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ShapePipeline extends OpenCvPipeline {
-    Telemetry telemetry;
-    public ShapePipeline(Telemetry telemetry) {
-        this.telemetry = telemetry;
-    }
-
+public class EmmyShapePipeline extends OpenCvPipeline {
     Mat hsv = new Mat();
     ArrayList<Mat> hsvsplit = new ArrayList<Mat>(){{
         add(new Mat());
         add(new Mat());
         add(new Mat());
-    }};
+        }};
     Mat b = new Mat();
     Point middle = new Point(360,480);
     Point seed = middle.clone();
     Size blur = new Size(5,5);
     Scalar fill = new Scalar(255);
-    //    Mat out = new Mat();
+//    Mat out = new Mat();
     Mat flat = new Mat();
     ArrayList<MatOfPoint> edges = new ArrayList<>();
     Mat filled = new Mat();
     MatOfPoint2f poly = new MatOfPoint2f();
     MatOfPoint2f thing = new MatOfPoint2f();
-    Mat mask = new Mat();
-    Mat oldBlur = new Mat();
-
-    int framesProcessed = 0;
 
     int shape = 4;
 
+    Telemetry telemetry;
+
+    public EmmyShapePipeline(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 
     @Override
     public void init(Mat input) {
+        // Executed before the first call to processFrame
     }
 
     private void fill_from_pixel(Mat input, Point seed, Mat out) {
-//        int h = input.height();
-//        int w = input.width();
-//        middle.x = (double) w/2;
-//        middle.y = (double) h/2;
         int h = input.height();
         int w = input.width();
-//        middle.x = (double) w/2 - 40;
-//        middle.y = (double) h/2 - 40;
-        mask = Mat.zeros(h+2, w+2, CvType.CV_8U);
+//        middle.x = (double) w/2;
+//        middle.y = (double) h/2;
+        Mat mask = Mat.zeros(h+2, w+2, CvType.CV_8U);
         input.convertTo(flat, CvType.CV_8U);
         Imgproc.floodFill(flat, mask, seed, fill);
         Imgproc.threshold(flat, out, 254, 255, Imgproc.THRESH_BINARY);
@@ -105,64 +97,55 @@ public class ShapePipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         // Executed every time a new frame is dispatched
-        Imgproc.cvtColor(input,hsv,Imgproc.COLOR_RGB2HSV);
-        org.opencv.core.Core.split(hsv,hsvsplit);
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+        org.opencv.core.Core.split(hsv, hsvsplit);
 
-        Imgproc.Canny(hsvsplit.get(2), b, 200, 225);
-        Imgproc.blur(b, hsv, blur);
-//        if (oldBlur.empty()) {
-//            oldBlur = hsv;
-//        }
-//        hsv.convertTo(b, CvType.CV_32F);
-//        oldBlur.convertTo(hsv, CvType.CV_32F);
-//        b = Core.mean(hsv,oldBlur);
-//        oldBlur = hsv;
-        b = hsv;
-//        filled = hsv.clone();
-//        int h = input.height();
-//        int w = input.width();
-//        middle.x = (double) w/2;
-//        middle.y = (double) h/2;
-//        fill_from_pixel(hsv, middle, b);
-//
-//        Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-//
-//        ArrayList<Double> average_edges = new ArrayList<>();
-//        for (MatOfPoint edge:edges) {
-//            ArrayList<Double> edge_average_dist = new ArrayList<>();
-//            for (Point point :
-//                    edge.toArray()) {
-//                edge_average_dist.add(dist_to_center(point));
-//            }
-//            Double[] dblarraycast = new Double[edge_average_dist.size()];
-//            dblarraycast = edge_average_dist.toArray(dblarraycast);
-//            average_edges.add(average_double(dblarraycast));
-//        }
-//        Double[] average_edge_array = new Double[average_edges.size()];
-//        seed = average_point(edges.get(index_of_min(average_edges.toArray(average_edge_array))).toArray());
-//        telemetry.addData("seed", seed.toString());
-//        fill_from_pixel(filled, seed, b);
-//        Imgproc.Canny(b, hsv, 250, 300);
-//        hsv.convertTo(b,CvType.CV_8U);
-////        Imgproc.blur(hsv,b,blur);
-//        telemetry.addData("shape", ""+getShape());
-        framesProcessed ++;
-        telemetry.addData("x", ""+framesProcessed);
-        telemetry.update();
-        return b;
+        return hsvsplit.get(2);
     }
 
-    public int getShape() {
+    private int proc2() {
+        Imgproc.Canny(hsvsplit.get(2), b, 100, 150);
+        Imgproc.blur(b, hsv, blur);
+        filled = hsv.clone();
+        int h = hsv.height();
+        int w = hsv.width();
+        middle.x = (double) w/2;
+        middle.y = (double) h/2;
+        fill_from_pixel(hsv, middle, b);
 
         Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-//        telemetry.addData("edges: ", edges.toString());
+
+        ArrayList<Double> average_edges = new ArrayList<>();
+        for (MatOfPoint edge:edges) {
+            ArrayList<Double> edge_average_dist = new ArrayList<>();
+            for (Point point :
+                    edge.toArray()) {
+                edge_average_dist.add(dist_to_center(point));
+            }
+            Double[] dblarraycast = new Double[edge_average_dist.size()];
+            dblarraycast = edge_average_dist.toArray(dblarraycast);
+            average_edges.add(average_double(dblarraycast));
+        }
+        Double[] average_edge_array = new Double[average_edges.size()];
+        seed = average_point(edges.get(index_of_min(average_edges.toArray(average_edge_array))).toArray());
+        telemetry.addData("seed", seed.toString());
+        fill_from_pixel(filled, seed, b);
+        Imgproc.Canny(b, hsv, 250, 300);
+        Imgproc.blur(hsv,b,blur);
+        Imgproc.findContours(b, edges, hsv, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+        telemetry.addData("edges: ", edges.toString());
         thing.fromArray(edges.get(0).toArray());
-        Imgproc.approxPolyDP(thing, poly, 60, true);
+        Imgproc.approxPolyDP(thing, poly, 10, true);
         telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
         shape = poly.toArray().length;
         telemetry.addData("shape", ""+shape);
 
+        telemetry.update();
         return shape;
+    }
+
+    public int getShape() {
+        return proc2();
     }
 
     @Override

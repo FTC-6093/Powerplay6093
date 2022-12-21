@@ -25,7 +25,7 @@ public class EmmyDebugging extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     private OpenCvWebcam webcam = null;
-    private EmmyColorPipeline pipeline = new EmmyColorPipeline();
+    private EmmyShapePipeline pipeline = new EmmyShapePipeline(telemetry);
 //    private BNO055IMU imu;
 
     // we need to extract this into a config file somehow
@@ -159,8 +159,9 @@ public class EmmyDebugging extends LinearOpMode {
             telemetry.addData("BLDrive: ", "" + BLDrive.getCurrentPosition());
             telemetry.addData("BRDrive: ", "" + BRDrive.getCurrentPosition());
 
-            telemetry.addData("Color: ", "" + pipeline.getSample());
-            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
+//            telemetry.addData("Color: ", "" + pipeline.getSample());
+            telemetry.addData("Shape: ", "" + pipeline.getShape());
+//            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
 
             telemetry.update();
         } while (
