@@ -118,7 +118,11 @@ public class ShapePipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         // Executed every time a new frame is dispatched
         hsv = new Mat();
+        if (input.depth() == 4) {
+            return input;
+        }
         Imgproc.cvtColor(input,hsv,Imgproc.COLOR_RGB2HSV);
+//        hsv = b.clone();
         Core.split(hsv,hsvsplit);
 
         Imgproc.Canny(hsvsplit.get(2), b, 200, 200);
