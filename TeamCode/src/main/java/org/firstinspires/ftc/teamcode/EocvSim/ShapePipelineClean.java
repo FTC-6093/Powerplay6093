@@ -49,10 +49,10 @@ public class ShapePipelineClean extends OpenCvPipeline {
     }
 
 //    how you add telemetry in EasyOpenCV-Sim, maybe remove all telemetry for real pipeline
-    Telemetry telemetry;
-    public ShapePipelineClean(Telemetry telemetry) {
-        this.telemetry = telemetry;
-    }
+//    Telemetry telemetry;
+//    public ShapePipelineClean(Telemetry telemetry) {
+//        this.telemetry = telemetry;
+//    }
 
     ArrayList<Mat> hsvSplit = new ArrayList<Mat>(){{
         add(new Mat());
@@ -80,8 +80,8 @@ public class ShapePipelineClean extends OpenCvPipeline {
     MatOfPoint2f highDefPoly = new MatOfPoint2f();
     ArrayList<MatOfPoint> edges;
 
-    int framesProcessed = 0;
-    int shape = 0;
+    public int framesProcessed = 0;
+    public int shape = 0;
 
 //    filling in OpenCV is actually really inconvenient
     Scalar fill = new Scalar(255);
@@ -104,6 +104,7 @@ public class ShapePipelineClean extends OpenCvPipeline {
     double[] blackPix = {0d,0d,0d};
     @Override
     public Mat processFrame(Mat input) {
+//        check for uninitialized camera and invalid starting conditions
         if (input.get(0,0) == blackPix) {
             return input;
         }
@@ -115,14 +116,12 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //        convert input to hsv then split on channels
         Imgproc.cvtColor(input,procA,Imgproc.COLOR_RGB2HSV);
         Core.split(procA, hsvSplit);
-//        you have to release all the textures or mem leak -_-
+//        you have to release all the textures or mem leak
         hsvSplit.get(0).release();
         hsvSplit.get(1).release();
 
-        // code works below this point -------------------------
-
 //        using V of hsV, canny, then blur
-        Imgproc.Canny(hsvSplit.get(2), procA,   150, 200);
+        Imgproc.Canny(hsvSplit.get(2), procA, 150, 200);
         hsvSplit.get(2).release();
         Imgproc.blur(procA, procB, blur);
 
@@ -137,6 +136,7 @@ public class ShapePipelineClean extends OpenCvPipeline {
 
 //        here is the magic; find the average distance per outline, and use the closest one to the middle
 //        maybe a simpler approach of choosing the last contour in the array would work better?
+//        NVM, it didn't work incredibly well
         ArrayList<Double> average_edges = new ArrayList<>();
         for (MatOfPoint edge:edges) {
             ArrayList<Double> edge_average_dist = new ArrayList<>();
@@ -162,7 +162,7 @@ public class ShapePipelineClean extends OpenCvPipeline {
 
 //        find the average point in the selected contour, and set the new fill seed to that
         seed = average_point(edges.get(index_of_min(average_edges.toArray(average_edge_array))).toArray());
-        telemetry.addData("seed", (int) seed.x+", "+(int) seed.y);
+//        telemetry.addData("seed", (int) seed.x+", "+(int) seed.y);
         fill_from_pixel(procB, seed, procA);
 
 //        edge detection and blur
@@ -171,15 +171,15 @@ public class ShapePipelineClean extends OpenCvPipeline {
 
 //        actually get the shape, update telemetry
         shape = getShape();
-        telemetry.addData("shape", ""+shape);
+//        telemetry.addData("shape", ""+shape);
         framesProcessed++;
-        telemetry.addData("x", ""+framesProcessed);
-        telemetry.update();
+//        telemetry.addData("x", ""+framesProcessed);
+//        telemetry.update();
         return procA;
     }
 
-//    0-1 is an error, 2-3 is triangle, 4 sq, 5 pentagon, 6+ is error
-    public int getShape() {
+//    0-2 is an error, 3 is triangle, 4 sq, 5 pentagon, 6+ is error
+    private int getShape() {
         edges = new ArrayList<>();
         if (procA.type() != CvType.CV_8U && procA.type() != CvType.CV_8UC1) {
             return 518;
@@ -191,8 +191,8 @@ public class ShapePipelineClean extends OpenCvPipeline {
         } catch (IndexOutOfBoundsException e) {
             return 404;
         }
-        Imgproc.approxPolyDP(highDefPoly, poly, 10, true);
-        telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
+        Imgproc.approxPolyDP(highDefPoly, poly, 15, true);
+//        telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
         return poly.toArray().length;
     }
 }

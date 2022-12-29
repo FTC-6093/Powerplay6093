@@ -26,7 +26,7 @@ public class EmmyDebugging extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     private OpenCvWebcam webcam = null;
-    private ShapePipelineClean pipeline = new ShapePipelineClean(telemetry);
+    private ShapePipelineClean pipeline = new ShapePipelineClean();
 //    private BNO055IMU imu;
 
     // we need to extract this into a config file somehow
@@ -150,7 +150,7 @@ public class EmmyDebugging extends LinearOpMode {
             }
 
             // just updating telemetry
-//            waitForMotors();
+            waitForMotors();
         }
     }
 
@@ -162,7 +162,20 @@ public class EmmyDebugging extends LinearOpMode {
             telemetry.addData("BLDrive: ", "" + BLDrive.getCurrentPosition());
             telemetry.addData("BRDrive: ", "" + BRDrive.getCurrentPosition());
 
-//            telemetry.addData("Shape: ", "" + pipeline.getShape());
+            String shapeName;
+            int currentShape = pipeline.shape;
+            if (currentShape < 3 || currentShape > 5) {
+                shapeName = "Error";
+            } else if (currentShape == 3) {
+                shapeName = "Triangle";
+            } else if (currentShape == 4) {
+                shapeName = "Square";
+            } else { // has to be 5
+                shapeName = "Pentagon";
+            }
+
+            telemetry.addData("Shape: ", "" + shapeName);
+            telemetry.addData("Frame: ", "" + pipeline.framesProcessed);
 //            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
 
             telemetry.update();
