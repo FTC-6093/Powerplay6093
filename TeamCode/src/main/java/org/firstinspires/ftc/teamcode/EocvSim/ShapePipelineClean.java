@@ -69,8 +69,8 @@ public class ShapePipelineClean extends OpenCvPipeline {
     Point middle = new Point(0,0);
     Point seed = middle.clone();
 
-//    blur kernel size
-    Size blur = new Size(3,3);
+//    blur kernel size, change with resolution?
+    Size blur = new Size(9,9);
 
 //    throwaway mat for unneeded values, used for hierarchy
     Mat trash = new Mat();
@@ -93,6 +93,7 @@ public class ShapePipelineClean extends OpenCvPipeline {
         mask = Mat.zeros(h+2, w+2, CvType.CV_8U);
         input.convertTo(flat, CvType.CV_8U);
         Imgproc.floodFill(flat, mask, seed, fill);
+        mask.release();
         Imgproc.threshold(flat, out, 254, 255, Imgproc.THRESH_BINARY);
         out.convertTo(flat, CvType.CV_8U);
     }
@@ -100,8 +101,12 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //    was gonna write an extract contours function, but the WET principle is pretty important
 
 //    executed every time a new frame is dispatched
+    double[] blackPix = {0d,0d,0d};
     @Override
     public Mat processFrame(Mat input) {
+        if (input.get(0,0) == blackPix) {
+            return input;
+        }
 //        sometimes, input has a depth of 4 for some reason
         if (input.depth() == 4) {
             return input;
@@ -110,9 +115,15 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //        convert input to hsv then split on channels
         Imgproc.cvtColor(input,procA,Imgproc.COLOR_RGB2HSV);
         Core.split(procA, hsvSplit);
+//        you have to release all the textures or mem leak -_-
+        hsvSplit.get(0).release();
+        hsvSplit.get(1).release();
+
+        // code works below this point -------------------------
 
 //        using V of hsV, canny, then blur
-        Imgproc.Canny(hsvSplit.get(2), procA, 200, 200);
+        Imgproc.Canny(hsvSplit.get(2), procA,   150, 200);
+        hsvSplit.get(2).release();
         Imgproc.blur(procA, procB, blur);
 
 //        fill from middle pixel
@@ -161,7 +172,7 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //        actually get the shape, update telemetry
         shape = getShape();
         telemetry.addData("shape", ""+shape);
-        framesProcessed ++;
+        framesProcessed++;
         telemetry.addData("x", ""+framesProcessed);
         telemetry.update();
         return procA;
@@ -170,9 +181,16 @@ public class ShapePipelineClean extends OpenCvPipeline {
 //    0-1 is an error, 2-3 is triangle, 4 sq, 5 pentagon, 6+ is error
     public int getShape() {
         edges = new ArrayList<>();
+        if (procA.type() != CvType.CV_8U && procA.type() != CvType.CV_8UC1) {
+            return 518;
+        }
         Imgproc.findContours(procA, edges, trash, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-        if (edges.size() == 0) {return 0;}
-        highDefPoly.fromArray(edges.get(0).toArray());
+        if (edges.size() == 0) {return 314;}
+        try {
+            highDefPoly.fromArray(edges.get(0).toArray());
+        } catch (IndexOutOfBoundsException e) {
+            return 404;
+        }
         Imgproc.approxPolyDP(highDefPoly, poly, 10, true);
         telemetry.addData("poly", ""+Arrays.toString(poly.toArray()));
         return poly.toArray().length;
