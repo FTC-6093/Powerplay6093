@@ -34,7 +34,16 @@ public abstract class EmmyDriveFunctions extends LinearOpMode {
         BlDrive.setPower(power);
         BrDrive.setPower(power);
 
-        while (this.opModeIsActive() && (FlDrive.isBusy()||FrDrive.isBusy()|| BlDrive.isBusy()||BrDrive.isBusy()));
+        while (this.opModeIsActive() && (
+                FlDrive.isBusy()||
+                FrDrive.isBusy()||
+                BlDrive.isBusy()||
+                BrDrive.isBusy()));
+
+        FlDrive.setPower(0);
+        FrDrive.setPower(0);
+        BlDrive.setPower(0);
+        BrDrive.setPower(0);
     }
 
     private final int[] straight = {1,1,1,1};
