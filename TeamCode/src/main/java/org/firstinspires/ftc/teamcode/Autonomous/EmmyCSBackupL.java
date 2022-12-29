@@ -1,41 +1,59 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-
-
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.Arrays;
-
-@Autonomous(name = "Auto Color")
-//@Disabled
-public class EmmyAutoColor extends LinearOpMode {
+@Autonomous(name = "EmmyCSBackupL")
+public class EmmyCSBackupL extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
+
+    // Troy wuz here
+    // yo mama 100
     private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor FLDrive = null;
     private DcMotor FRDrive = null;
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
-//    private DcMotor VertLift = null;
+    private DcMotor VertLift = null;
+    private CRServo OpenClaw = null;
     OpenCvWebcam webcam = null;
-    EmmyColorPipeline pipeline = new EmmyColorPipeline();
-    private  BNO055IMU imu;
+    private BNO055IMU imu;
     final double WHEEL_DIAMETER = 3.875;
-    final double TICKS_PER_ROTATION = 1120;
-    final double PIE = 3.14159;
-    final double TICKS_PER_INCH = TICKS_PER_ROTATION/(WHEEL_DIAMETER * PIE);
+    final double TICKS_PER_ROTATION = 313;
+    final double PIE = Math.PI;
+    // Ticks per rotation / (Diameter * Pi)
+    final double TICKS_PER_INCH = 36.6428571;
+    final double LIFT_TICK_PER_REVOLUTION = 103.6;
+    ColorSensor color;
+    // Circumfrence / TicksPerInch
+/*
+    private static char checkForRGB(double r, double g, double b, double error) {
+        if (255-error < r+g+b || r+g+b < 255+error) {
+            char[] rgb = {'r', 'g', 'b'};
+            double[] findMax = {r, g, b};
 
+            int currentMaxIndex = 0;
+            for (int i=0; i < 3; i++) {
+                if (findMax[i] > findMax[currentMaxIndex]) {
+                    currentMaxIndex = i;
+                }
+            }
+
+            return rgb[currentMaxIndex];
+        }
+        return 'e';
+    }
+*/
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -52,103 +70,118 @@ public class EmmyAutoColor extends LinearOpMode {
         FRDrive = hardwareMap.get(DcMotor.class, "FRDrive");
         BLDrive = hardwareMap.get(DcMotor.class, "BLDrive");
         BRDrive = hardwareMap.get(DcMotor.class, "BRDrive");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+        color = hardwareMap.get(ColorSensor.class, "Color");
+        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
+        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
 
-//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-//            @Override
-//            public void onOpened() {
-//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-//            }
-//            @Override
-//            public void onError(int errorCode) {
-//            }
-//        });
-        webcam.openCameraDevice();
-        webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-
+// Bad words
+        // REALLY BAD WORDS
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
+        VertLift.setDirection(DcMotor.Direction.FORWARD);
+
+
 
 //        VertLift.setDirection(DcMotor.Direction.FORWARD);
 
-        webcam.setPipeline(pipeline); //Actually set the pipeline??? lez go
 
         FLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BLDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BRDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        VertLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         // Wait for the game to start (driver presses PLAY)
+        OpenClaw.setPower(1);
+        LiftExtension(16, 0.20);
+//      servo(Positive) is Clockwise[From Front View]
+        driveStraight(22, 0.40);
 
-        runtime.reset();
+        double IR = color.red();
+        double IG = color.green();
+        double IB = color.blue();
+        // Defaults color to green in case there are color sensor issues.
+        char colorChar = 'g';
+        if(IR > IG && IR > IB) {
+            colorChar = 'r';
+            driveStraight(13, 0.20);
+            driveStraight(-5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(15.5, 0.20);
+            LiftExtension(170,1);
+            driveStraight(-3.5,0.10);
+            OpenClaw.setPower(-0.5);
+            driveStraight(3.5, 0.10);
+            VertLift.setPower(-0.20);
+            strafeLeft(54,0.20);
+            driveStraight(-27,0.20);
 
-        //Jaren, run code here
-        //pipeline.getColor() will return
-        //'r' for red, 'b' for blue, 'g' for green, 'e' if not pointing at cone, 'a' if something went wrong in config
+        }
+        else if(IB > IR && IB > IG){
+            colorChar = 'b';
+            driveStraight(13, 0.20);
+            driveStraight(-5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(13.5, 0.20);
+            LiftExtension(170,1);
+            driveStraight(-3,0.10);
+            OpenClaw.setPower(-0.5);
+            driveStraight(3.5, 0.10);
+            VertLift.setPower(-0.20);
+            strafeRight(17,0.20);
+            driveStraight(-27, 0.20);
 
-
-
-        //claw is 3.5 inches
-        sleep(5000);
-        int i = 0;
-        while (i < 5000){
-            char color = pipeline.getSample();
-            i++;
-            switch (color) {
-                case 'r':
-                    driveStraight(27.5, 0.75);
-                    strafeLeft(24, 0.75);
-                    i = 5001;
-                    break;
-                case 'g':
-                    driveStraight(27.5, 0.75);
-                    i = 5001;
-                    break;
-                case 'b':
-                    driveStraight(27.5, 0.75);
-                    strafeRight(24, 0.75);
-                    i = 5001;
-                    break;
-//                case 'e':
-//                case 'a':
-//                    sleep(2000);
-//                    break;
-                //                case 'e':
-//                    telemetry.addData("Can't find cone","");
-//                    telemetry.update();
-//                    break;
-//                case 'a':
-//                    telemetry.addData("Camera config issue", "");
-//                    telemetry.update();
-//                    break;
-//                default:
-//                    telemetry.addData("Shouldn't be here", "");
-//                    telemetry.update();
-//                    break;
-            }
+        }
+        else {
+            colorChar = 'g';
+            driveStraight(13, 0.20);
+            driveStraight(-5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(13.5, 0.20);
+            LiftExtension(170,1);
+            driveStraight(-3,0.10);
+            OpenClaw.setPower(-0.5);
+            driveStraight(3.5, 0.10);
+            VertLift.setPower(-0.20);
+            strafeLeft(16,0.20);
+            driveStraight(-27, 0.20);
         }
 
-        telemetry.addData("Color: ", ""+pipeline.getSample());
-        telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
+        while (opModeIsActive()) {
+            telemetry.addData("Red", color.red());
+            telemetry.addData("Green", color.green());
+            telemetry.addData("Blue", color.blue());
+            telemetry.addData("Color", colorChar);
+            telemetry.update();
+        }
+// Sussy amogus
+// am crewmate :)
+//        switch(colorChar) {
+//            case 'r':
+//                strafeLeft(24, 0.20);
+//            case 'g':
+//                driveStraight(10, 0.20);
+//            case 'b':
+//                strafeRight(24,0.20);
+//        }
+
         telemetry.update();
 
-//        while (true) {}
-
-
-
-        }
+    }
 
 
 
 
 
-        //snip ftc code
+    //snip ftc code
         /*
         //This is were we put the code we want
         IMUTurn(360, .5, FLDrive, FRDrive, BLDrive, BRDrive);
@@ -183,9 +216,9 @@ public class EmmyAutoColor extends LinearOpMode {
         */
 
 
-        //sleep(5000);
-
-
+    //sleep(5000);
+// youre a programmer. nerd.
+// Get rekt
     public void initializeIMU() {
         this.imu = this.hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -289,7 +322,8 @@ public class EmmyAutoColor extends LinearOpMode {
                 backLeft.setPower(0);
                 backRight.setPower(0);
                 break;
-            }
+            } // Imagine coding
+            // troy likes kids
             if(robotTurnedAngle>180) {
                 robotTurnedAngle = robotTurnedAngle - 360;
             }
@@ -366,17 +400,16 @@ public class EmmyAutoColor extends LinearOpMode {
             BlPosition = BLDrive.getCurrentPosition();
             BrPosition = BRDrive.getCurrentPosition();
 //            We are just waiting until the motors reach the position (based on the ticks passed)
-             telemetry.addData("Fl Position", ""+FlPosition);
-            telemetry.addData("Fr Position", ""+FrPosition);
-            telemetry.addData("Bl Position", ""+BlPosition);
-            telemetry.addData("Br Position", ""+BrPosition);
-             telemetry.addData("Ticks Needed", ""+tickNeeded);
-             telemetry.addData("Color: ", ""+pipeline.getSample());
-            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
-            telemetry.addData("Success!", null);
+//            telemetry.addData("Fl Position", ""+FlPosition);
+//            telemetry.addData("Fr Position", ""+FrPosition);
+//            telemetry.addData("Bl Position", ""+BlPosition);
+//            telemetry.addData("Br Position", ""+BrPosition);
+//            telemetry.addData("Ticks Needed", ""+tickNeeded);
+//            telemetry.addData("Success!", null);
 
             telemetry.update();
-        }
+        } // When you hit the griddy but the griddy hits back
+        // then I HIT YOU
         //When the motors have passed the required ticks, stop each motor
         FLDrive.setPower(0);
         FRDrive.setPower(0);
@@ -440,17 +473,46 @@ public class EmmyAutoColor extends LinearOpMode {
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
             telemetry.addData("Ticks Needed", ""+tickNeeded);
-            telemetry.addData("Color: ", ""+pipeline.getSample());
-            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
             telemetry.addData("Success!", null);
 
             telemetry.update();
-        }
+        } // Jaren wus not here
+        // im always here.
         //When the motors have passed the required ticks, stop each motor
         FLDrive.setPower(0);
         FRDrive.setPower(0);
         BLDrive.setPower(0);
         BRDrive.setPower(0);
+    }
+
+
+    public void LiftExtension(double inch, double power) {
+        // extend da lift function
+        //TicksPerRevolution = 103.6
+        final double ticksPerInch = 16.5;
+        double CurrentPOS = VertLift.getCurrentPosition();
+        // Is now to the height of the claw
+        int ticksNeeded = (int) (ticksPerInch * inch);
+        int VertLiftPos;
+        // I have no clue what this is for lol i stole it from radical <3
+        final double directionBias = 0;
+
+        // Reset the Encoder value
+        VertLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // Find The necessary tick value for motor
+        VertLift.setTargetPosition(ticksNeeded);
+        // Instill power limitations
+        VertLift.setPower(power+directionBias);
+        while(ticksNeeded > CurrentPOS) {
+            VertLift.setPower(power);
+            VertLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            CurrentPOS = VertLift.getCurrentPosition();
+            telemetry.addData("TicksNeeded ", ticksNeeded);
+            telemetry.addData("Current Position ", CurrentPOS);
+            telemetry.update();
+        }
+
+        VertLift.setPower(0);
     }
 
     public void strafeLeft(double inch, double power) {
@@ -509,8 +571,6 @@ public class EmmyAutoColor extends LinearOpMode {
             telemetry.addData("Bl Position", ""+BlPosition);
             telemetry.addData("Br Position", ""+BrPosition);
             telemetry.addData("Ticks Needed", ""+tickNeeded);
-            telemetry.addData("Color: ", ""+pipeline.getSample());
-            telemetry.addData("Middle pixel: ", ""+ Arrays.toString(pipeline.getMiddlePixel()));
             telemetry.addData("Success!", null);
 
             telemetry.update();
@@ -522,3 +582,8 @@ public class EmmyAutoColor extends LinearOpMode {
         BRDrive.setPower(0);
     }
 }
+
+// Jyaren chan: totemo kawaii desu nee
+// UWU OWO UVU OVO
+
+// Yo Mamma so fat, her weight in pounds can't be stored as an integer.
