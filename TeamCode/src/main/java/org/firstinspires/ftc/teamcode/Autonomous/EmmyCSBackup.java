@@ -146,12 +146,12 @@ public class EmmyCSBackup extends EmmyDriveFunctions {
         }
     }
 
-    private double getFirstAngle() {
+    private double getHeading() {
         return this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
     }
 
     public void IMUTurn (double angle, double power) {
-        final double startAngle = getFirstAngle();
+        final double startAngle = getHeading();
 
 //        Note from Will: I have no idea what it means, but we should try it without
 //        angle = angle * .9; //incrementation to account for drift
@@ -181,7 +181,7 @@ public class EmmyCSBackup extends EmmyDriveFunctions {
 
         while (this.opModeIsActive() &&
 //        Wait while abs of wrapped difference in angle since start is less than the desired angle change
-        Math.abs((getFirstAngle() - startAngle - 180) % 360 + 180) < Math.abs(angle));
+        Math.abs((getHeading() - startAngle - 180) % 360 + 180) < Math.abs(angle));
 
         FlDrive.setPower(0);
         FrDrive.setPower(0);
