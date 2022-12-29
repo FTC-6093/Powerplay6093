@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.EocvSim.ShapePipelineClean;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -25,7 +26,7 @@ public class EmmyDebugging extends LinearOpMode {
     private DcMotor BLDrive = null;
     private DcMotor BRDrive = null;
     private OpenCvWebcam webcam = null;
-    private EmmyColorPipeline pipeline = new EmmyColorPipeline();
+    private ShapePipelineClean pipeline = new ShapePipelineClean();
 //    private BNO055IMU imu;
 
     // we need to extract this into a config file somehow
@@ -91,15 +92,17 @@ public class EmmyDebugging extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
-            }
-            @Override
-            public void onError(int errorCode) {
-            }
-        });
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+//            }
+//            @Override
+//            public void onError(int errorCode) {
+//            }
+//        });
+        webcam.openCameraDevice();
+        webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
         webcam.setPipeline(pipeline); //Actually set the pipeline??? lez go
 
         telemetry.addData("Status: ", "Initialized");
@@ -159,8 +162,21 @@ public class EmmyDebugging extends LinearOpMode {
             telemetry.addData("BLDrive: ", "" + BLDrive.getCurrentPosition());
             telemetry.addData("BRDrive: ", "" + BRDrive.getCurrentPosition());
 
-            telemetry.addData("Color: ", "" + pipeline.getSample());
-            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
+            String shapeName;
+            int currentShape = pipeline.shape;
+            if (currentShape < 3 || currentShape > 5) {
+                shapeName = "Error";
+            } else if (currentShape == 3) {
+                shapeName = "Triangle";
+            } else if (currentShape == 4) {
+                shapeName = "Square";
+            } else { // has to be 5
+                shapeName = "Pentagon";
+            }
+
+            telemetry.addData("Shape: ", "" + shapeName);
+            telemetry.addData("Frame: ", "" + pipeline.framesProcessed);
+//            telemetry.addData("Pixel: ", Arrays.toString(pipeline.getMiddlePixel()));
 
             telemetry.update();
         } while (
