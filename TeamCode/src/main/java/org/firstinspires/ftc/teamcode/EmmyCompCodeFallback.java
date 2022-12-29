@@ -108,9 +108,9 @@ public class EmmyCompCodeFallback extends OpMode {
 //        }
 
         //Retrieve driving values from controller
-        double y = gamepad1.left_stick_y * .8; // Is reversed
-        double x = gamepad1.left_stick_x * -.8;// Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x * .8;
+        double y = gamepad1.left_stick_y; // Is reversed
+        double x = -gamepad1.left_stick_x;// Counteract imperfect strafing
+        double rx = gamepad1.right_stick_x;
 
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);

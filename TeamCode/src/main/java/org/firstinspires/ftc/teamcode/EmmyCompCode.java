@@ -219,9 +219,9 @@ public class EmmyCompCode extends OpMode {
 //            telemetry.update();
 //        }
         if (down && !up) {
-            VertLift.setPower(-0.6);
+            VertLift.setPower(1);
         } else if (!down && up) {
-            VertLift.setPower(0.2);
+            VertLift.setPower(-0.3);
         } else {
             VertLift.setPower(0);
         }
