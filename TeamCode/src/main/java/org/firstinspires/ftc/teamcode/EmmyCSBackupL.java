@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "EmmyCSBackupR")
-public class EmmyCSBackup extends LinearOpMode {
+@Autonomous(name = "EmmyCSBackupL")
+public class EmmyCSBackupL extends LinearOpMode {
     // Declare OpMode members. (attributes of OP mode)
 
     // Troy wuz here
@@ -111,48 +111,48 @@ public class EmmyCSBackup extends LinearOpMode {
             colorChar = 'r';
             driveStraight(13, 0.20);
             driveStraight(-5, 0.20);
-            strafeLeft(29, 0.20);
-            driveStraight(27, 0.20);
-            strafeLeft(17.5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(15.5, 0.20);
             LiftExtension(170,1);
             driveStraight(-3.5,0.10);
             OpenClaw.setPower(-0.5);
             driveStraight(3.5, 0.10);
             VertLift.setPower(-0.20);
-            strafeRight(12,0.20);
-            driveStraight(-6, 0.20);
+            strafeLeft(54,0.20);
+            driveStraight(-27,0.20);
 
         }
         else if(IB > IR && IB > IG){
             colorChar = 'b';
             driveStraight(13, 0.20);
             driveStraight(-5, 0.20);
-            strafeLeft(29, 0.20);
-            driveStraight(27, 0.20);
-            strafeLeft(17.5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(13.5, 0.20);
             LiftExtension(170,1);
             driveStraight(-3,0.10);
             OpenClaw.setPower(-0.5);
             driveStraight(3.5, 0.10);
             VertLift.setPower(-0.20);
-            strafeRight(78,0.20);
-            driveStraight(-6, 0.20);
+            strafeRight(17,0.20);
+            driveStraight(-27, 0.20);
 
         }
         else {
             colorChar = 'g';
             driveStraight(13, 0.20);
             driveStraight(-5, 0.20);
-            strafeLeft(29, 0.20);
-            driveStraight(27, 0.20);
-            strafeLeft(17.5, 0.20);
+            strafeRight(29, 0.20);
+            driveStraight(54, 0.20);
+            strafeLeft(13.5, 0.20);
             LiftExtension(170,1);
             driveStraight(-3,0.10);
             OpenClaw.setPower(-0.5);
             driveStraight(3.5, 0.10);
             VertLift.setPower(-0.20);
-            strafeRight(46,0.20);
-            driveStraight(-6, 0.20);
+            strafeLeft(16,0.20);
+            driveStraight(-27, 0.20);
         }
 
         while (opModeIsActive()) {
