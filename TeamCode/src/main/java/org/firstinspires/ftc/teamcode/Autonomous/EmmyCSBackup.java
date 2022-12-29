@@ -60,8 +60,8 @@ public class EmmyCSBackup extends EmmyDriveFunctions {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+//        We don't use the IMU, but we could.
 //        initializeIMU();
-
 
         FlDrive = hardwareMap.get(DcMotor.class, "FLDrive");
         FrDrive = hardwareMap.get(DcMotor.class, "FLDrive");
@@ -134,65 +134,11 @@ public class EmmyCSBackup extends EmmyDriveFunctions {
         }
     }
 
-    public void initializeIMU() {
-        this.imu = this.hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        this.imu.initialize(parameters);
-
-        if(!this.imu.isGyroCalibrated()) {
-            this.sleep(50);
-        }
-    }
-
-    private double getHeading() {
-        return this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
-    }
-
-    public void IMUTurn (double angle, double power) {
-        final double startAngle = getHeading();
-
-//        Note from Will: I have no idea what it means, but we should try it without
-//        angle = angle * .9; //incrementation to account for drift
-
-        FlDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FrDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BlDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BrDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        FlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        if (angle < 0) {
-            FlDrive.setPower(-power);
-            FrDrive.setPower(power);
-            BlDrive.setPower(-power);
-            BrDrive.setPower(power);
-
-        } else {
-            FlDrive.setPower(power);
-            FrDrive.setPower(-power);
-            BlDrive.setPower(power);
-            BrDrive.setPower(-power);
-        }
-
-        while (this.opModeIsActive() &&
-//        Wait while abs of wrapped difference in angle since start is less than the desired angle change
-        Math.abs((getHeading() - startAngle - 180) % 360 + 180) < Math.abs(angle));
-
-        FlDrive.setPower(0);
-        FrDrive.setPower(0);
-        BlDrive.setPower(0);
-        BrDrive.setPower(0);
-    }
-
     public void raiseLift(double inch, double power) {
         //TicksPerRevolution = 103.6
         // Jaren, this is bad coding practice. Less magic variables please.
         final double ticksPerInch = 16.5;
+        // ???
         // Is now to the height of the claw
 
         VertLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
