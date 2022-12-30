@@ -38,19 +38,24 @@ public class ColorPipeline extends OpenCvPipeline {
     private static char checkForHSV(double h, double epsilon) {
 //        assert h <= 60;
 
-        double horiz_rot = (h-epsilon) % 360;
-        if (horiz_rot < 0) {horiz_rot += 360;} //AAAAAAAAAAAAAAAAAAA
+        final double hueRotation;
+        final double hueLeftRot = (h-epsilon) % 360;
+        if (hueLeftRot < 0) {
+            hueRotation = hueLeftRot + 360;
+        } else {
+            hueRotation = hueLeftRot;
+        }
 
         //red = 300
-        if (240 < horiz_rot && horiz_rot < 360) {
+        if (300 - epsilon < hueRotation && hueRotation < 300 + epsilon) {
             return 'r';
         }
         //green = 60
-        if (0 < horiz_rot && horiz_rot < 120) {
+        if (60 - epsilon < hueRotation && hueRotation < 60 + epsilon) {
             return 'g';
         }
         //blue = 180
-        if (120 < horiz_rot && horiz_rot < 240) {
+        if (180 - epsilon < hueRotation && hueRotation < 180 + epsilon) {
             return 'b';
         }
 
