@@ -7,16 +7,38 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.openftc.easyopencv.OpenCvWebcam;
 
-public abstract class EmmyDriveFunctions extends LinearOpMode {
+public abstract class DriveFunctions extends LinearOpMode {
     protected DcMotor FlDrive, FrDrive, BlDrive, BrDrive;
     protected BNO055IMU imu;
 
-    protected final double WHEEL_DIAMETER = 3.875;
-    protected final double TICKS_PER_ROTATION = 313;
+    protected final double WHEEL_DIAMETER;
+    protected final double TICKS_PER_ROTATION;
+    protected final double TICKS_PER_INCH;
+
+    protected DriveFunctions(double wheel_diameter, double ticks_per_rotation) {
+        WHEEL_DIAMETER = wheel_diameter;
+        TICKS_PER_ROTATION = ticks_per_rotation;
+        TICKS_PER_INCH = TICKS_PER_ROTATION / (WHEEL_DIAMETER * Math.PI);
+    }
+
     // Pi = Math.PI
     // Ticks per rotation / (Diameter * Pi)
-    protected final double TICKS_PER_INCH = TICKS_PER_ROTATION / (WHEEL_DIAMETER * Math.PI);
+
+    protected void initializeMain() {
+        telemetry.addData("Status: ", "Initializing Motors");
+        telemetry.update(); initializeMotors();
+        telemetry.addData("Status: ", "Initializing IMU");
+        telemetry.update(); initializeIMU();
+        telemetry.addData("Status: ", "Initializing Detector");
+        telemetry.update(); initializeDetection();
+        telemetry.addData("Status: ", "Initialized");
+        telemetry.update();
+    }
+
+//    Driving functions
+    protected abstract void initializeMotors();
 
     private void wheelMove(double distance, double power, int[] inverts) {
         FlDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -65,17 +87,7 @@ public abstract class EmmyDriveFunctions extends LinearOpMode {
         wheelMove(distance,power,right);
     }
 
-    protected void initializeIMU() {
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        imu.initialize(parameters);
-
-        if(!imu.isGyroCalibrated()) {
-            this.sleep(50);
-        }
-    }
+    protected abstract void initializeIMU();
 
     private double getHeading() {
         return this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZXY, AngleUnit.DEGREES).firstAngle;
@@ -84,7 +96,7 @@ public abstract class EmmyDriveFunctions extends LinearOpMode {
     protected void IMUTurn (double angle, double power) {
         final double startAngle = getHeading();
 
-//        Note from Will: I have no idea what it means, but we should try it without
+//        Note from Will: I have no idea what it means, but we should try it without first
 //        angle = angle * .9; //incrementation to account for drift
 
         FlDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -92,17 +104,11 @@ public abstract class EmmyDriveFunctions extends LinearOpMode {
         BlDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BrDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        FlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        FrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BlDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        BrDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         if (angle < 0) {
             FlDrive.setPower(-power);
             FrDrive.setPower(power);
             BlDrive.setPower(-power);
             BrDrive.setPower(power);
-
         } else {
             FlDrive.setPower(power);
             FrDrive.setPower(-power);
@@ -119,4 +125,8 @@ public abstract class EmmyDriveFunctions extends LinearOpMode {
         BlDrive.setPower(0);
         BrDrive.setPower(0);
     }
+
+    protected abstract void initializeDetection();
+
+    protected abstract int getParkZone(); // needs to return an int from 0-2 corresponding to the parking zone
 }
