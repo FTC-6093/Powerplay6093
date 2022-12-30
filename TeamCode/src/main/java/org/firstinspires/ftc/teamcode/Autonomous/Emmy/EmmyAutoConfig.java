@@ -14,6 +14,7 @@ public abstract class EmmyAutoConfig extends DriveFunctions {
         super(3.875, 313);
     }
 
+    @Override
     protected void initializeMotors() {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motors that run backwards when connected directly to the battery
@@ -39,6 +40,7 @@ public abstract class EmmyAutoConfig extends DriveFunctions {
         OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
     }
 
+    @Override
     protected void initializeIMU() {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
