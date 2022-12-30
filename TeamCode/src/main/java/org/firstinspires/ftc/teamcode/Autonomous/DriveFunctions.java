@@ -23,9 +23,6 @@ public abstract class DriveFunctions extends LinearOpMode {
         TICKS_PER_INCH = TICKS_PER_ROTATION / (WHEEL_DIAMETER * Math.PI);
     }
 
-    // Pi = Math.PI
-    // Ticks per rotation / (Diameter * Pi)
-
     protected void initializeMain() {
         telemetry.addData("Status: ", "Initializing Motors");
         telemetry.update(); initializeMotors();

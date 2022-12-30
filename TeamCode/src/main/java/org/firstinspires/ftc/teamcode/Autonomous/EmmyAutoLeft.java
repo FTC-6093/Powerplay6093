@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-public abstract class EmmyAutoRight extends EmmyAutoConfig {
+public abstract class EmmyAutoLeft extends EmmyAutoConfig {
     @Override
     public void runOpMode() {
         initializeMain();
@@ -16,9 +16,9 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
 //        Drop cone on the pole
         driveStraight(13, 0.20);
         driveStraight(-5, 0.20);
-        strafeLeft(29, 0.20);
-        driveStraight(27, 0.20);
-        strafeLeft(17.5, 0.20);
+        strafeRight(29, 0.20);
+        driveStraight(54, 0.20);
+        strafeLeft(15.5, 0.20);
         raiseLift(170,1);
         driveStraight(-3.5,0.10);
         OpenClaw.setPower(-0.5);
@@ -30,24 +30,24 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
         switch (zone) {
             case 0:
                 zoneChar = 'l';
-                strafeRight(12,0.20);
+                strafeLeft(54,0.20);
                 break;
             case 1:
                 zoneChar = 'm';
-                strafeRight(78,0.20);
+                strafeRight(17,0.20);
                 break;
             case 2:
                 zoneChar = 'r';
-                strafeRight(46,0.20);
+                strafeLeft(16,0.20);
                 break;
             default:
                 zoneChar = 'e';
-                strafeRight(46,0.20);
+                strafeLeft(16,0.20);
                 break;
         }
 
 //        Drive forward into parking zone
-        driveStraight(-6, 0.20);
+        driveStraight(-27,0.20);
 
         while (opModeIsActive()) {
             telemetry.addData("Zone: ", zoneChar);
