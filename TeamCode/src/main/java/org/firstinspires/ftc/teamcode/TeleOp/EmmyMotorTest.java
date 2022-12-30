@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.EocvSim.EmmyColorPipeline;
+import org.firstinspires.ftc.teamcode.EocvSim.ColorPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -29,7 +29,7 @@ public class EmmyMotorTest extends OpMode {
     private CRServo OpenClaw = null;
     private CRServo LiftUp = null;
     OpenCvWebcam webcam = null;
-    EmmyColorPipeline pipeline = new EmmyColorPipeline();
+    ColorPipeline pipeline = new ColorPipeline();
     
     int HOW_LONG_MAX = 0;
     final double powerMultiplier = 0.5;
