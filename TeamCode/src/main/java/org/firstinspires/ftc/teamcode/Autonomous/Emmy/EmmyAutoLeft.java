@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Emmy;
 
 public abstract class EmmyAutoLeft extends EmmyAutoConfig {
     @Override

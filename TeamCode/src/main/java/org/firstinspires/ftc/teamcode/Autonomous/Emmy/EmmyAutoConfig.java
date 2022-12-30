@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.Emmy;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.Autonomous.DriveFunctions;
 
 public abstract class EmmyAutoConfig extends DriveFunctions {
     DcMotor VertLift;
