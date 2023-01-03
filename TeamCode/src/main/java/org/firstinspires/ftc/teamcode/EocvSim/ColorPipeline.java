@@ -1,27 +1,22 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.EocvSim;
 import static java.lang.Thread.sleep;
-
-import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.util.ArrayList;
 
-
-public class EmmyColorPipeline extends OpenCvPipeline {
+public class ColorPipeline extends OpenCvPipeline {
     Mat rgb = new Mat();
     Mat hsvMask = new Mat();
-    Size boxSize = new Size(5, 5);
-    Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
-    org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
-    Scalar one = new Scalar(1);
+//    Size boxSize = new Size(5, 5);
+//    Mat mask = new Mat(new Size(1282,722), org.opencv.core.CvType.CV_8U);
+//    org.opencv.core.Point seed = new org.opencv.core.Point(640, 360);
+//    Scalar one = new Scalar(1);
 
     private static char checkForRGB(double r, double g, double b, double error) {
         if (255-error < r+g+b || r+g+b < 255+error) {
@@ -40,32 +35,31 @@ public class EmmyColorPipeline extends OpenCvPipeline {
         return 'e';
     }
 
-    private static char checkForHSV(double h, double error) {
+    private static char checkForHSV(double h, double epsilon) {
 //        assert h <= 60;
 
-        double horiz_rot = (h-error) % 360;
-        if (horiz_rot < 0) {horiz_rot += 360;} //AAAAAAAAAAAAAAAAAAA
+        final double hueRotation;
+        final double hueLeftRot = (h-epsilon) % 360;
+        if (hueLeftRot < 0) {
+            hueRotation = hueLeftRot + 360;
+        } else {
+            hueRotation = hueLeftRot;
+        }
 
         //red = 300
-        if (240 < horiz_rot && horiz_rot < 360) {
+        if (300 - epsilon < hueRotation && hueRotation < 300 + epsilon) {
             return 'r';
         }
         //green = 60
-        if (0 < horiz_rot && horiz_rot < 120) {
+        if (60 - epsilon < hueRotation && hueRotation < 60 + epsilon) {
             return 'g';
         }
         //blue = 180
-        if (120 < horiz_rot && horiz_rot < 240) {
+        if (180 - epsilon < hueRotation && hueRotation < 180 + epsilon) {
             return 'b';
         }
 
         return 'e';
-    }
-
-
-    @Override
-    public void init(Mat input) {
-
     }
 
     @Override
@@ -92,27 +86,22 @@ public class EmmyColorPipeline extends OpenCvPipeline {
         return input;
     }
 
-    public char getColor(double[] clr) {
+    public char getColor(int error) {
         double[] hsv = hsvMask.get(360, 640);
-        if (hsv != null) {
-            if (hsv.length == 4 || hsv.length == 3 || hsv.length == 1) {
-                double r = hsv[0];
-//                double g = hsv[1];
-//                double b = hsv[2];
-//                return checkForRGB(r,g,b,60);
-                return checkForHSV(r*2, 60);
-            }
+        if (hsv != null && (hsv.length == 4 || hsv.length == 3) && hsv[1] != 0d) {
+            double h = hsv[0]; // hsv in opencv is 0-180 for some reason
+            return checkForHSV(h*2, error);
         }
         return 'a';
     }
 
     public char getSample() {
-        double hues = 0;
-        for (int i = 0; i < 100; i++) {
-            hues += getMiddlePixel()[0];
-        }
+//        double hues = 0;
+//        for (int i = 0; i < 100; i++) {
+//            hues += getMiddlePixel()[0];
+//        }
 
-        return getColor(new double[]{hues/100});
+        return getColor(/*new double[]{hues/100}*/ 60);
     }
 
     public double[] getMiddlePixel() {
