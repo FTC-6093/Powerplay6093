@@ -13,7 +13,7 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
         driveStraight(22, 0.40);
         int zone = getParkZone();
 
-//        Drop cone on the pole
+//        drive to the pole and raise lift
         driveStraight(13, 0.20);
         driveStraight(-5, 0.20);
         strafeLeft(29, 0.20);
@@ -23,25 +23,40 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
         driveStraight(-3.5,0.10);
         OpenClaw.setPower(-0.5);
         driveStraight(3.5, 0.10);
-        VertLift.setPower(-0.20);
+        VertLift.setPower(-0.50);
 
-//        Defaults zone to middle in case there are detection issues.
         char zoneChar;
+
+//        drop cone on the pole and park
         switch (zone) {
             case 0:
                 zoneChar = 'l';
+                driveStraight(-3.5,0.10);
+                OpenClaw.setPower(-0.5);
+                driveStraight(3.5, 0.10);
+                VertLift.setPower(-0.50);
                 strafeRight(12,0.20);
                 break;
             case 1:
                 zoneChar = 'm';
+                driveStraight(-3,0.10);
+                OpenClaw.setPower(-0.5);
+                driveStraight(3.5, 0.10);
+                VertLift.setPower(-0.20);
                 strafeRight(78,0.20);
                 break;
             case 2:
                 zoneChar = 'r';
+                OpenClaw.setPower(-0.5);
+                driveStraight(3.5, 0.10);
+                VertLift.setPower(-0.20);
                 strafeRight(46,0.20);
                 break;
             default:
                 zoneChar = 'e';
+                OpenClaw.setPower(-0.5);
+                driveStraight(3.5, 0.10);
+                VertLift.setPower(-0.20);
                 strafeRight(46,0.20);
                 break;
         }

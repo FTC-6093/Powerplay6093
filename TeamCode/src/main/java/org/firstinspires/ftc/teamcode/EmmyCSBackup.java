@@ -100,11 +100,13 @@ public class EmmyCSBackup extends LinearOpMode {
         OpenClaw.setPower(1);
         LiftExtension(16, 0.20);
 //      servo(Positive) is Clockwise[From Front View]
-        driveStraight(22, 0.40);
+//        driveStraight(22, 0.40);
 
-        double IR = color.red();
-        double IG = color.green();
-        double IB = color.blue();
+        driveStraight(13, 0.20);
+        final double IR = color.red();
+        final double IG = color.green();
+        final double IB = color.blue();
+        driveStraight(-5, 0.20);
         // Defaults color to green in case there are color sensor issues.
         char colorChar = 'g';
         if(IR > IG && IR > IB) {
