@@ -118,7 +118,7 @@ public class EmmyCSBackup extends LinearOpMode {
             driveStraight(-3.5,0.10);
             OpenClaw.setPower(-0.5);
             driveStraight(3.5, 0.10);
-            VertLift.setPower(-0.20);
+            VertLift.setPower(-0.50);
             strafeRight(12,0.20);
             driveStraight(-6, 0.20);
 
