@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.openftc.easyopencv.OpenCvWebcam;
 
 public abstract class DriveFunctions extends LinearOpMode {
     protected DcMotor FlDrive, FrDrive, BlDrive, BrDrive;
@@ -20,7 +19,13 @@ public abstract class DriveFunctions extends LinearOpMode {
     protected DriveFunctions(double wheel_diameter, double ticks_per_rotation) {
         WHEEL_DIAMETER = wheel_diameter;
         TICKS_PER_ROTATION = ticks_per_rotation;
-        TICKS_PER_INCH = TICKS_PER_ROTATION / (WHEEL_DIAMETER * Math.PI);
+        TICKS_PER_INCH = ticks_per_rotation / (wheel_diameter * Math.PI);
+    }
+
+    protected DriveFunctions(double wheel_diameter, double ticks_per_rotation, double ticks_per_inch) {
+        WHEEL_DIAMETER = wheel_diameter;
+        TICKS_PER_ROTATION = ticks_per_rotation;
+        TICKS_PER_INCH = ticks_per_inch;
     }
 
     protected void initializeMain() {
@@ -64,11 +69,6 @@ public abstract class DriveFunctions extends LinearOpMode {
                 FrDrive.isBusy()||
                 BlDrive.isBusy()||
                 BrDrive.isBusy()));
-
-        FlDrive.setPower(0);
-        FrDrive.setPower(0);
-        BlDrive.setPower(0);
-        BrDrive.setPower(0);
     }
 
     private final int[] straight = {1,1,1,1};

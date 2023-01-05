@@ -6,7 +6,7 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
         initializeMain();
         waitForStart();
         OpenClaw.setPower(1);
-        raiseLift(16, 0.20);
+        raiseLift(20, 0.20);
 //      servo(Positive) is Clockwise[From Front View]
 
 //        Grab parking zone
@@ -31,32 +31,18 @@ public abstract class EmmyAutoRight extends EmmyAutoConfig {
         switch (zone) {
             case 0:
                 zoneChar = 'l';
-                driveStraight(-3.5,0.10);
-                OpenClaw.setPower(-0.5);
-                driveStraight(3.5, 0.10);
-                VertLift.setPower(-0.50);
                 strafeRight(12,0.20);
                 break;
             case 1:
                 zoneChar = 'm';
-                driveStraight(-3,0.10);
-                OpenClaw.setPower(-0.5);
-                driveStraight(3.5, 0.10);
-                VertLift.setPower(-0.20);
                 strafeRight(78,0.20);
                 break;
             case 2:
                 zoneChar = 'r';
-                OpenClaw.setPower(-0.5);
-                driveStraight(3.5, 0.10);
-                VertLift.setPower(-0.20);
                 strafeRight(46,0.20);
                 break;
             default:
                 zoneChar = 'e';
-                OpenClaw.setPower(-0.5);
-                driveStraight(3.5, 0.10);
-                VertLift.setPower(-0.20);
                 strafeRight(46,0.20);
                 break;
         }

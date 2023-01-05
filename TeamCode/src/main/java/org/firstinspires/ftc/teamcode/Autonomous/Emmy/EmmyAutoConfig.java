@@ -11,7 +11,7 @@ public abstract class EmmyAutoConfig extends DriveFunctions {
     CRServo OpenClaw;
 
     public EmmyAutoConfig() {
-        super(3.875, 313);
+        super(3.58, 446.0);
     }
 
     @Override
@@ -72,6 +72,6 @@ public abstract class EmmyAutoConfig extends DriveFunctions {
             telemetry.update();
         }
 
-        VertLift.setPower(0);
+//        VertLift.setPower(0);
     }
 }

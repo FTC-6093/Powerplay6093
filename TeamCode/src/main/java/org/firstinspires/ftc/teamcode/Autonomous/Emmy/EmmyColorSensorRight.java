@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "EmmyCSBackupL")
-public class EmmyColorSensorBackupLeft extends EmmyAutoLeft {
+@Autonomous(name = "EmmyColorSensorRight")
+public class EmmyColorSensorRight extends EmmyAutoRight {
     private final ElapsedTime runtime = new ElapsedTime();
     ColorSensor color;
 
