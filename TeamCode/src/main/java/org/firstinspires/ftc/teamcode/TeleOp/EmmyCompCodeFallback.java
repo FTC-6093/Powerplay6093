@@ -32,20 +32,10 @@ public class EmmyCompCodeFallback extends OpMode {
         FRDrive  = hardwareMap.get(DcMotor.class, "FRDrive");
         FLDrive  = hardwareMap.get(DcMotor.class, "FLDrive");
         BRDrive  = hardwareMap.get(DcMotor.class, "BRDrive");
-//        VertLift  = hardwareMap.get(DcMotor.class, "VertLift");
-
-//        OpenClaw = hardwareMap.get(CRServo.class, "OpenClaw");
-//        LiftUp = hardwareMap.get(CRServo.class, "LiftUp");
-
         BLDrive.setDirection(DcMotor.Direction.FORWARD);
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-//        VertLift.setDirection(DcMotor.Direction.FORWARD);
-
-//        OpenClaw.setDirection(CRServo.Direction.FORWARD);
-//        LiftUp.setDirection(CRServo.Direction.FORWARD);
-
 
         // Retrieve the IMU from the hardware map
         BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -56,7 +46,6 @@ public class EmmyCompCodeFallback extends OpMode {
         imu.initialize(parameters);
 
 
-        double pastMotorPower = 0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -72,34 +61,6 @@ public class EmmyCompCodeFallback extends OpMode {
 
     @Override
     public void loop() { //Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-
-        // get servos
-
-//        boolean servoClose = gamepad2.dpad_left;
-//        boolean servoOpen = gamepad2.dpad_right;
-//
-//        boolean tiltUp = gamepad2.dpad_up;
-//        boolean tiltDown = gamepad2.dpad_down;
-
-
-//        if (servoOpen) {
-//            OpenClaw.setPower(0.5);
-//        } else if (servoClose) {
-//            OpenClaw.setPower(-0.5);
-//        } else {
-//            OpenClaw.setPower(0.85);
-//        }
-//
-//        if (tiltUp) {
-//            LiftUp.setPower(0.5);
-//        } else if (tiltDown) {
-//            LiftUp.setPower(-0.5);
-//        } else {
-//            LiftUp.setPower(0);
-//        }
-
-        // Retrieve lift values from controller
-
 //        double botHeading;
 //        if (imu != null) {
 //            botHeading = -imu.getAngularOrientation().firstAngle;
@@ -148,14 +109,6 @@ public class EmmyCompCodeFallback extends OpMode {
         BLDrive.setPower(backLeftPower*motorMultiplier);
         BRDrive.setPower(backRightPower*motorMultiplier);
 
-//        if (down && !up) {
-//            VertLift.setPower(0.65);
-//        } else if (!down && up){
-//            VertLift.setPower(-0.65);
-//        }else{
-//            VertLift.setPower(0);
-//        }
-
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         // telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
@@ -169,9 +122,6 @@ public class EmmyCompCodeFallback extends OpMode {
         FRDrive.setPower(0);
         BLDrive.setPower(0);
         BRDrive.setPower(0);
-//        VertLift.setPower(0);
-//        LiftUp.setPower(0);
-//        OpenClaw.setPower(0);
         telemetry.addData("Status", "STOPPED");
     }
 }
