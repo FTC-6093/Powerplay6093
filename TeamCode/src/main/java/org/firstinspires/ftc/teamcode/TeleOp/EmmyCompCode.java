@@ -158,8 +158,8 @@ public class EmmyCompCode extends OpMode {
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
-        boolean down = (gamepad1.left_trigger > 0);
-        boolean up = (gamepad1.right_trigger > 0);
+        boolean up = (gamepad1.left_trigger > 0);
+        boolean down = (gamepad1.right_trigger > 0);
         double uplimit = .3;
         double downlimit = .3;
         // Denominator is the largest motor power (absolute value) or 1
@@ -218,10 +218,12 @@ public class EmmyCompCode extends OpMode {
 //            telemetry.addData("Lift Status: ", up);
 //            telemetry.update();
 //        }
+
+//        Negative power is raise, Positive lower
         if (down && !up) {
-            VertLift.setPower(-0.3);
+            VertLift.setPower(-1);
         } else if (!down && up) {
-            VertLift.setPower(1);
+            VertLift.setPower(0.3);
         } else {
             VertLift.setPower(0);
         }
