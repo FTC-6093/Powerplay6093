@@ -218,13 +218,16 @@ public class EmmyCompCode extends OpMode {
 //            telemetry.addData("Lift Status: ", up);
 //            telemetry.update();
 //        }
-        if (down && !up) {
-            VertLift.setPower(1);
-        } else if (!down && up) {
-            VertLift.setPower(-0.3);
-        } else {
-            VertLift.setPower(0);
-        }
+//        if (down && !up) {
+//            VertLift.setPower(1);
+//        } else if (!down && up) {
+//            VertLift.setPower(-0.3);
+//        } else {
+//            VertLift.setPower(0);
+//        }
+        VertLift.setPower(gamepad2.left_stick_y);
+
+
 
         // Show the elapsed game time and wheel power.
 //        telemetry.addData("Status", "Run Time: " + runtime.toString());
