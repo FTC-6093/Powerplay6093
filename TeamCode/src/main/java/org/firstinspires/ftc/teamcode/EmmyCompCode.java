@@ -46,7 +46,7 @@ public class EmmyCompCode extends OpMode {
         BRDrive.setDirection(DcMotor.Direction.REVERSE);
         FRDrive.setDirection(DcMotor.Direction.REVERSE);
         FLDrive.setDirection(DcMotor.Direction.FORWARD);
-        VertLift.setDirection(DcMotor.Direction.FORWARD);
+        VertLift.setDirection(DcMotor.Direction.REVERSE);
 
         OpenClaw.setDirection(CRServo.Direction.FORWARD);
 //        LiftUp.setDirection(CRServo.Direction.FORWARD);
@@ -55,12 +55,12 @@ public class EmmyCompCode extends OpMode {
 
 
         // Retrieve the IMU from the hardware map
-        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//        BNO055IMU imu = hardwareMap.get(BNO055IMU.class, "imu");
+//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         // Technically this is the default, however specifying it is clearer
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         // Without this, data retrieving from the IMU throws an exception
-        imu.initialize(parameters);
+//        imu.initialize(parameters);
 
 
 
@@ -81,8 +81,6 @@ public class EmmyCompCode extends OpMode {
 
 
 
-        boolean servoClose = gamepad1.left_bumper;
-        boolean servoOpen = gamepad1.right_bumper;
 //        boolean tiltUp = gamepad1.dpad_up;
 //        boolean tiltDown = gamepad1.dpad_down;
 //        boolean CloseK;
@@ -124,14 +122,15 @@ public class EmmyCompCode extends OpMode {
 //            OpenClaw.setPower(0);
 //        }
         //---------------
-//
+        boolean servoOpen = gamepad2.right_bumper;
+        boolean servoClose = gamepad2.left_bumper;
         if (servoOpen) {
-            OpenClaw.setPower(OpenClaw.getPower() + 0.1);
+            OpenClaw.setPower(1);
         } else if (servoClose) {
-            OpenClaw.setPower(OpenClaw.getPower() - 0.1);
-        } else {
-            OpenClaw.setPower(0);
+            OpenClaw.setPower(-1);
         }
+
+        telemetry.addData("Claw Power", ""+OpenClaw.getPower());
 
 //        if (tiltUp) {
 ////            LiftUp.setPower(0.5);
@@ -225,7 +224,24 @@ public class EmmyCompCode extends OpMode {
 //        } else {
 //            VertLift.setPower(0);
 //        }
-        VertLift.setPower(gamepad2.left_stick_y);
+
+        double liftPower = gamepad2.right_stick_y * -1; // stick y is inverted
+        if (liftPower < 0) {
+            liftPower *= 0.3;
+        }
+
+
+        if (VertLift.getCurrentPosition() > 0 && gamepad2.right_stick_y < 0) {
+            VertLift.setPower(0);
+        } else {
+            VertLift.setPower(liftPower);
+        }
+
+        telemetry.addData("VertLift Power", ""+VertLift.getPower());
+        telemetry.addData("VertLift Position", ""+VertLift.getCurrentPosition());
+
+        telemetry.addData("Right Stick", ""+liftPower);
+
 
 
 
