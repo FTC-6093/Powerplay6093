@@ -81,8 +81,8 @@ public class EmmyCompCode extends OpMode {
 
 
 
-        boolean servoClose = gamepad1.left_bumper;
-        boolean servoOpen = gamepad1.right_bumper;
+        boolean servoClose = gamepad2.left_bumper;
+        boolean servoOpen = gamepad2.right_bumper;
 //        boolean tiltUp = gamepad1.dpad_up;
 //        boolean tiltDown = gamepad1.dpad_down;
 //        boolean CloseK;
@@ -151,15 +151,17 @@ public class EmmyCompCode extends OpMode {
 //        }
 
         //Retrieve driving values from controller
-        double y = gamepad1.left_stick_y * .8; // Is reversed
+        double y = gamepad1.left_stick_y * -.8; // Is reversed
         double x = gamepad1.left_stick_x * -.8;// Counteract imperfect strafing
+
+        telemetry.addData("left stick y", ""+y);
+        telemetry.addData("left stick x", ""+x);
+
         double rx = gamepad1.right_stick_x * .8;
 
 //        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
 //        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
-        boolean down = (gamepad1.left_trigger > 0);
-        boolean up = (gamepad1.right_trigger > 0);
         double uplimit = .3;
         double downlimit = .3;
         // Denominator is the largest motor power (absolute value) or 1
@@ -200,35 +202,25 @@ public class EmmyCompCode extends OpMode {
             BRDrive.setPower(backRightPower * motorMultiplier);
         //}
 //        if (up > 0) {
-//            if(up >= uplimit) {
-//                VertLift.setPower(uplimit);
-//            }
-//            VertLift.setPower(up);
-//            telemetry.addData("Lift Status: ", up);
-//            telemetry.update();
-//        } else if (down > 0){
-//            if(down >= downlimit) {
-//                VertLift.setPower(downlimit);
-//            }
-//            VertLift.setPower(-down);
-//            telemetry.addData("Lift Status: ",down);
-//            telemetry.update();
-//        }else{
-//            VertLift.setPower(0);
-//            telemetry.addData("Lift Status: ", up);
-//            telemetry.update();
-//        }
-        if (down && !up) {
-            VertLift.setPower(1);
-        } else if (!down && up) {
-            VertLift.setPower(-0.3);
-        } else {
-            VertLift.setPower(0);
+        double liftPower = gamepad2.right_stick_y * -1; // stick y is inverted
+        if (liftPower < 0) {
+            liftPower *= 0.3;
         }
 
-        // Show the elapsed game time and wheel power.
-//        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        // telemetry.addData("Motors", "Forward (%f), Backward (%f)", motorForward, motorBackward);
+
+        if (VertLift.getCurrentPosition() < 0 && gamepad2.right_stick_y > 0) {
+            VertLift.setPower(0);
+        } else {
+            VertLift.setPower(liftPower);
+        }
+
+        telemetry.addData("FRD", FRDrive.getCurrentPosition());
+        telemetry.addData("VertLift Power", ""+VertLift.getPower());
+        telemetry.addData("VertLift Position", ""+VertLift.getCurrentPosition());
+
+        telemetry.addData("Right Stick", ""+liftPower);
+
+
         telemetry.update();
     }
 
